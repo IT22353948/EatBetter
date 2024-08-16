@@ -1,0 +1,1 @@
+ D:\\Developments\\Flutter\ devs\\eat_better\\.dart_tool\\flutter_build\\89e86da4fed785f48ec6f114342f0b58\\native_assets.yaml: 

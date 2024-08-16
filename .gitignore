@@ -1,4 +1,3 @@
-
 ### Android ###
 # Gradle files
 .gradle/
@@ -80,10 +79,6 @@ doc/api/
 .pub/
 coverage/
 lib/generated_plugin_registrant.dart
-# For library packages, don’t commit the pubspec.lock file.
-# Regenerating the pubspec.lock file lets you test your package against the latest compatible versions of its dependencies.
-# See https://dart.dev/guides/libraries/private-files#pubspeclock
-#pubspec.lock
 
 # Android related
 **/android/**/gradle-wrapper.jar
@@ -131,4 +126,11 @@ lib/generated_plugin_registrant.dart
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 
-# End of https://www.toptal.com/developers/gitignore/api/flutter,dart,android
+# Other (IDE-related)
+*.idea/
+*.vscode/
+*.DS_Store
+*.lock
+
+# Additional ignore patterns based on your project needs:
+# .env

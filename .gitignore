@@ -27,6 +27,7 @@ render.experimental.xml
 .project
 .settings/
 .vscode/*
+/vscode/
 
 ### Flutter repo-specific ###
 /bin/cache/

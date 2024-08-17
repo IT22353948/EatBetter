@@ -26,3 +26,10 @@ then use these commands
 1. git rm -r --cached .
 2. git add .
 3. git commit -m "Remove ignored files"
+
+## Contributors
+
+- [Gayashaan Krishnamoorthy](https://github.com/Gayashaan)
+- [Dinuvi Asithma](https://github.com/Dinuvi-Asithma)
+- [Prabashwara](https://github.com/prabashwara65)
+- [Hasara](https://github.com/HasaraHS)

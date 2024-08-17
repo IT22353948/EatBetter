@@ -10,7 +10,7 @@ EatBetter Flutter Mobile Apllication
 
 # Note
 
-if you found any unneccessory file or folder or file is in he repo please add it to gitIgnor.
+if you found any unnecessary file or folder or file is in he repo please add it to gitIgnor.
 
 1. for adding a folder to a gitignor
    type in gitIgnor file as "/folername/"

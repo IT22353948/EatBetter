@@ -27,6 +27,19 @@ then use these commands
 2. git add .
 3. git commit -m "Remove ignored files"
 
+# Important
+
+To create basic file structre i have added some dummy dart files, fonts and images. Please replace or remove them with actualy files,
+
+files to be reamoved or replaced
+
+-fonts/IndieFlower-Regular.ttf
+(once you remove or add a font please update the pubspec.yaml)
+
+-models/testModel.dart
+
+-pages/home.dart
+
 ## Contributors
 
 - [Gayashaan Krishnamoorthy](https://github.com/Gayashaan)

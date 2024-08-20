@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'Image_To_Text.dart'; 
 
-class InitialScreen extends StatelessWidget {
+class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

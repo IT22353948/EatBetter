@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class FoodAnalysis extends StatefulWidget {
-  const FoodAnalysis({super.key});
+class RecipeSearch extends StatefulWidget {
+  const RecipeSearch({super.key});
 
   @override
-  State<FoodAnalysis> createState() => _FoodAnalysisState();
+  State<RecipeSearch> createState() => _RecipeSearchState();
 }
 
-class _FoodAnalysisState extends State<FoodAnalysis> {
+class _RecipeSearchState extends State<RecipeSearch> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,7 +32,7 @@ class _FoodAnalysisState extends State<FoodAnalysis> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: const <Widget>[
               Text(
-                'Food Analysis',
+                'Recipe Search',
                 style: TextStyle(fontSize: 24),
               ),
             ],
@@ -42,17 +42,3 @@ class _FoodAnalysisState extends State<FoodAnalysis> {
     );
   }
 }
-
-
-//to add the gradient
-//wrap below code in container. see food_analysis.dart for more details
-// decoration: const BoxDecoration(
-//           gradient: LinearGradient(
-//             begin: Alignment.topLeft,
-//             end: Alignment.bottomCenter,
-//             colors: [
-//               Color.fromARGB(126, 248, 100, 37), // Orange
-//               Colors.white, // White
-//             ],
-//           ),
-//         ),

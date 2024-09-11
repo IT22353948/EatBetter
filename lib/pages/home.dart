@@ -1,5 +1,7 @@
+import 'dart:ffi';
 import 'package:flutter/material.dart';
-import 'Image_To_Text.dart'; 
+import 'Image_To_Text.dart';
+import 'food_analysis.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -7,7 +9,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text('Foodie App'),
+        title: const Text('EatBetter'),
         backgroundColor: Colors.teal,
       ),
       body: Padding(
@@ -44,6 +46,13 @@ class HomePage extends StatelessWidget {
               'Adjust your app settings',
               Icons.settings,
               Container(), // Replace with the actual Settings screen
+            ),
+            _buildNavigationCard(
+              context,
+              'Food Analysis',
+              'Analyse the nutritional value of food',
+              Icons.analytics_sharp,
+              FoodAnalysis(), // Replace with the actual Settings screen
             ),
           ],
         ),

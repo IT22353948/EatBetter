@@ -24,7 +24,7 @@ class HomePage extends StatelessWidget {
               'Text Scanner',
               'Scan and extract text from images',
               Icons.camera_alt,
-              HomePage(),
+              HomePageImageToText(),
             ),
             _buildNavigationCard(
               context,

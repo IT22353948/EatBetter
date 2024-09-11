@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 
-class HomePage extends StatefulWidget {
+class HomePageImageToText extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePageImageToText> {
   File? selectedMedia;
   String? extractedText;
   bool _isExpanded = false;

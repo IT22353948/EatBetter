@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 
-class HomePageImageToText extends StatefulWidget {
-  const HomePageImageToText({super.key});
+class ImageToText extends StatefulWidget {
+  const ImageToText({super.key});
 
   @override
-  State<HomePageImageToText> createState() => _HomePageState();
+  State<ImageToText> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePageImageToText> {
+class _HomePageState extends State<ImageToText> {
   File? selectedMedia;
   String? extractedText;
   bool _isExpanded = false;
@@ -21,29 +21,40 @@ class _HomePageState extends State<HomePageImageToText> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        toolbarHeight: 100, // Increases the height of the AppBar
+        toolbarHeight: 100,
         title: const Text('Text Recognition'),
-        
         backgroundColor: const Color(0xFFF86A2E),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (selectedMedia != null) _buildImagePreview(),
-            const SizedBox(height: 16),
-            _buildExtractTextView(),
-          ],
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color.fromARGB(126, 248, 100, 37), // Orange
+              Colors.white, // White
+            ],
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (selectedMedia != null) _buildImagePreview(),
+              const SizedBox(height: 16),
+              _buildExtractTextView(),
+            ],
+          ),
         ),
       ),
       floatingActionButton: Stack(
         children: [
           Positioned(
             bottom: 16,
-            left: 16, // Add margin from the left
+            left: 16,
             child: Padding(
-              padding: const EdgeInsets.only(left: 16.0), // Additional margin
+              padding: const EdgeInsets.only(left: 16.0),
               child: FloatingActionButton(
                 onPressed: () {
                   setState(() {
@@ -128,7 +139,7 @@ class _HomePageState extends State<HomePageImageToText> {
             color: Colors.black.withOpacity(0.2),
             spreadRadius: 5,
             blurRadius: 7,
-            offset: Offset(0, 3),
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -165,7 +176,7 @@ class _HomePageState extends State<HomePageImageToText> {
             color: Colors.black.withOpacity(0.1),
             spreadRadius: 2,
             blurRadius: 5,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),

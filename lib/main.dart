@@ -13,12 +13,12 @@ void main() => runApp(
         initialRoute: '/',
         routes: {
           '/': (context) => const NavigationMenu(),
-          '/home': (context) => HomePage(),
+          '/home': (context) => const HomePage(),
           '/recipe_search': (context) => const RecipeSearch(),
           '/food_analysis': (context) => const FoodAnalysis(),
           '/location_view': (context) => const LocationView(),
           '/saved_recipes': (context) => const SavedRecipes(),
-          '/image_to_text': (context) => const HomePageImageToText(),
+          '/image_to_text': (context) => const ImageToText(),
         },
       ),
     );

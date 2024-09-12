@@ -4,6 +4,8 @@ import 'Image_To_Text.dart';
 import 'food_analysis.dart';
 
 class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,7 +28,7 @@ class HomePage extends StatelessWidget {
               'Text Scanner',
               'Scan and extract text from images',
               Icons.camera_alt,
-              HomePageImageToText(),
+              ImageToText(),
               Colors.teal, // Icon color
               Color(0xFFF86A2E), // Card border color
             ),

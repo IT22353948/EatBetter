@@ -1,3 +1,4 @@
+import 'package:eat_better/pages/prabashwara/Image_To_Text.dart';
 import 'package:flutter/material.dart';
 import 'package:eat_better/pages/home.dart';
 import 'package:eat_better/pages/food_analysis.dart';
@@ -12,11 +13,12 @@ void main() => runApp(
         initialRoute: '/',
         routes: {
           '/': (context) => const NavigationMenu(),
-          '/home': (context) => HomePage(),
+          '/home': (context) => const HomePage(),
           '/recipe_search': (context) => const RecipeSearch(),
           '/food_analysis': (context) => const FoodAnalysis(),
           '/location_view': (context) => const LocationView(),
           '/saved_recipes': (context) => const SavedRecipes(),
+          '/image_to_text': (context) => const ImageToText(),
         },
       ),
     );

@@ -1,6 +1,6 @@
 import 'dart:ffi';
 import 'package:flutter/material.dart';
-import 'Image_To_Text.dart';
+import 'prabashwara/Image_To_Text.dart';
 import 'food_analysis.dart';
 
 class HomePage extends StatelessWidget {

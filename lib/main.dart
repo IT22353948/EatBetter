@@ -1,4 +1,4 @@
-import 'package:eat_better/pages/Image_To_Text.dart';
+import 'package:eat_better/pages/prabashwara/Image_To_Text.dart';
 import 'package:flutter/material.dart';
 import 'package:eat_better/pages/home.dart';
 import 'package:eat_better/pages/food_analysis.dart';

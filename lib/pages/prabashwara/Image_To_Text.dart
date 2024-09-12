@@ -1,19 +1,20 @@
 import 'dart:io';
+import 'package:eat_better/pages/prabashwara/NextPage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
+
 
 class ImageToText extends StatefulWidget {
   const ImageToText({super.key});
 
   @override
-  State<ImageToText> createState() => _HomePageState();
+  State<ImageToText> createState() => _ImageToTextState();
 }
 
-class _HomePageState extends State<ImageToText> {
+class _ImageToTextState extends State<ImageToText> {
   File? selectedMedia;
   String? extractedText;
-  bool _isExpanded = false;
   bool _isLoading = false;
 
   @override
@@ -44,67 +45,57 @@ class _HomePageState extends State<ImageToText> {
               if (selectedMedia != null) _buildImagePreview(),
               const SizedBox(height: 16),
               _buildExtractTextView(),
+              const SizedBox(height: 16),
+              _buildButtonsRow(), // Add this row with buttons
+              const SizedBox(height: 16),
+              if (extractedText != null)
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NextPage(extractedText: extractedText!),
+                      ),
+                    );
+                  },
+                  child: const Text('Go Next'),
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white, backgroundColor: Colors.teal,
+                  ),
+                ),
             ],
           ),
         ),
       ),
-      floatingActionButton: Stack(
-        children: [
-          Positioned(
-            bottom: 16,
-            left: 16,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 16.0),
-              child: FloatingActionButton(
-                onPressed: () {
-                  setState(() {
-                    selectedMedia = null;
-                    extractedText = null;
-                  });
-                },
-                child: const Icon(Icons.clear),
-                backgroundColor: Colors.red,
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 16,
-            right: 16,
-            child: FloatingActionButton(
-              onPressed: _pickImage,
-              child: const Icon(Icons.add_a_photo),
-              backgroundColor: Colors.teal,
-            ),
-          ),
-        ],
-      ),
     );
   }
 
-  Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await showDialog<XFile?>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Select Image Source'),
-        actions: [
-          TextButton(
-            onPressed: () async {
-              final pickedFile = await picker.pickImage(source: ImageSource.camera);
-              Navigator.of(context).pop(pickedFile);
-            },
-            child: const Text('Take Photo'),
+  Widget _buildButtonsRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ElevatedButton(
+          onPressed: () => _pickImage(ImageSource.camera),
+          child: const Text('Open Camera'),
+          style: ElevatedButton.styleFrom(
+            foregroundColor: Colors.white, backgroundColor: Colors.teal,
           ),
-          TextButton(
-            onPressed: () async {
-              final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-              Navigator.of(context).pop(pickedFile);
-            },
-            child: const Text('Choose from Gallery'),
+        ),
+        const SizedBox(width: 16),
+        ElevatedButton(
+          onPressed: () => _pickImage(ImageSource.gallery),
+          child: const Text('Open Gallery'),
+          style: ElevatedButton.styleFrom(
+            foregroundColor: Colors.white, backgroundColor: Colors.teal,
           ),
-        ],
-      ),
+        ),
+      ],
     );
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: source);
 
     if (pickedFile != null) {
       final file = File(pickedFile.path);
@@ -184,11 +175,7 @@ class _HomePageState extends State<ImageToText> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            _isExpanded
-                ? extractedText!
-                : (extractedText!.length > 100
-                    ? extractedText!.substring(0, (extractedText!.length * 0.24).toInt()) + '...'
-                    : extractedText!),
+            extractedText!,
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w500,
@@ -197,22 +184,6 @@ class _HomePageState extends State<ImageToText> {
             textAlign: TextAlign.start,
           ),
           const SizedBox(height: 10),
-          if (extractedText!.length > 100)
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  _isExpanded = !_isExpanded;
-                });
-              },
-              child: Text(
-                _isExpanded ? 'Show Less' : 'Show More',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.teal,
-                ),
-              ),
-            ),
         ],
       ),
     );

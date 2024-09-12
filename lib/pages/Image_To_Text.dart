@@ -19,8 +19,10 @@ class _HomePageState extends State<HomePageImageToText> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
+        toolbarHeight: 100, // Increases the height of the AppBar
         title: const Text('Text Recognition'),
-        backgroundColor: Colors.teal,
+        
+        backgroundColor: const Color(0xFFF86A2E),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

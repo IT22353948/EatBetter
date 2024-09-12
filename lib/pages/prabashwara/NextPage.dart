@@ -59,7 +59,7 @@ class NextPage extends StatelessWidget {
                       ),
                     ),
                     child: const Text(
-                      'First Button',
+                      'Give Suggest',
                       style: TextStyle(
                         fontSize: 18, 
                         color: Colors.white, // Text color
@@ -72,16 +72,16 @@ class NextPage extends StatelessWidget {
                       // Second button action
                     },
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 40.0), // Custom button size
+                      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 15.0), // Adjusted button size
                       backgroundColor: Colors.orange, // Button background color
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0), // Rounded corners
+                        borderRadius: BorderRadius.circular(8.0), // Adjusted border radius
                       ),
                     ),
                     child: const Text(
-                      'Second Button',
+                      'Refresh',
                       style: TextStyle(
-                        fontSize: 18, 
+                        fontSize: 18,
                         color: Colors.white, // Text color
                       ),
                     ),

@@ -92,7 +92,7 @@ class HomePage extends StatelessWidget {
   ) {
     return Card(
       shape: RoundedRectangleBorder(
-        side: BorderSide(color: borderColor, width: 2), // Custom card border color
+        side: BorderSide(color: borderColor, width: 4), // Custom card border color
         borderRadius: BorderRadius.circular(8.0),
       ),
       elevation: 5,

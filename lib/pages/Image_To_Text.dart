@@ -4,8 +4,10 @@ import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart
 import 'package:image_picker/image_picker.dart';
 
 class HomePageImageToText extends StatefulWidget {
+  const HomePageImageToText({super.key});
+
   @override
-  _HomePageState createState() => _HomePageState();
+  State<HomePageImageToText> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePageImageToText> {

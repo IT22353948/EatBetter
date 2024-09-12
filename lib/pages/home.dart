@@ -15,8 +15,18 @@ class HomePage extends StatelessWidget {
         backgroundColor: const Color(0xFFF86A2E), // AppBar color
       ),
       body: Container(
-        
-        color: const Color(0xFFF5F5F5), // Background color for the body
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color.fromARGB(126, 248, 100, 37), // Orange
+              Colors.white, // White
+            ],
+          ),
+        ),
+
+        // color: const Color(0xFFF5F5F5), // Background color for the body
         padding: const EdgeInsets.all(16.0),
         child: GridView.count(
           crossAxisCount: 2,

@@ -52,10 +52,10 @@ class NextPage extends StatelessWidget {
                       // First button action
                     },
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 40.0), // Custom button size
+                      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 60.0), // Custom button size
                       backgroundColor: Colors.teal, // Button background color
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0), // Rounded corners
+                        borderRadius: BorderRadius.circular(8.0), // Rounded corners
                       ),
                     ),
                     child: const Text(
@@ -72,14 +72,14 @@ class NextPage extends StatelessWidget {
                       // Second button action
                     },
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 15.0), // Adjusted button size
+                      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 30.0), // Adjusted button size
                       backgroundColor: Colors.orange, // Button background color
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0), // Adjusted border radius
                       ),
                     ),
                     child: const Text(
-                      'Refresh',
+                      ' Mark ',
                       style: TextStyle(
                         fontSize: 18,
                         color: Colors.white, // Text color

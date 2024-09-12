@@ -10,7 +10,7 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         centerTitle: true,
         title: const Text('EatBetter'),
-        backgroundColor: Colors.teal,
+        backgroundColor: const Color(0xFFF86A2E),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

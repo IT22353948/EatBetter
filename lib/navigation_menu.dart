@@ -41,7 +41,8 @@ class _NavigationMenuState extends State<NavigationMenu> {
               _currentIndex = index;
             });
           },
-          selectedItemColor: Color.fromARGB(248, 246, 106, 46),
+          backgroundColor: const Color(0xFFF86A2E), //248, 246, 106, 46
+          selectedItemColor: Color.fromARGB(255, 255, 255, 255),
           unselectedItemColor: const Color.fromARGB(255, 0, 0, 0),
           showUnselectedLabels: true,
           iconSize: 25,

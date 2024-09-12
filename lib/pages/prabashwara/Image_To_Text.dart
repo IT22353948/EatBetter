@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 
-
 class ImageToText extends StatefulWidget {
   const ImageToText({super.key});
 
@@ -22,7 +21,7 @@ class _ImageToTextState extends State<ImageToText> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        toolbarHeight: 100,
+        toolbarHeight: 80,
         title: const Text('Text Recognition'),
         backgroundColor: const Color(0xFFF86A2E),
       ),
@@ -40,13 +39,13 @@ class _ImageToTextState extends State<ImageToText> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              if (selectedMedia != null) _buildImagePreview(),
+              _buildImagePreview(), // Display blank card or selected image
               const SizedBox(height: 16),
-              _buildExtractTextView(),
+              //_buildExtractTextView(), // Uncomment this if you want to show the extracted text
               const SizedBox(height: 16),
-              _buildButtonsRow(), // Add this row with buttons
+              _buildButtonsRow(),
               const SizedBox(height: 16),
               if (extractedText != null)
                 ElevatedButton(
@@ -60,7 +59,13 @@ class _ImageToTextState extends State<ImageToText> {
                   },
                   child: const Text('Go Next'),
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white, backgroundColor: Colors.teal,
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.teal,
+                    padding: EdgeInsets.symmetric(horizontal: 140, vertical: 12), // Adjust button size here
+                    textStyle: TextStyle(fontSize: 18), // Adjust text size here
+                    shape: RoundedRectangleBorder(
+                         borderRadius: BorderRadius.circular(8.0), // Adjust the border radius here
+                    ),
                   ),
                 ),
             ],
@@ -78,7 +83,13 @@ class _ImageToTextState extends State<ImageToText> {
           onPressed: () => _pickImage(ImageSource.camera),
           child: const Text('Open Camera'),
           style: ElevatedButton.styleFrom(
-            foregroundColor: Colors.white, backgroundColor: Colors.teal,
+            foregroundColor: Colors.white,
+            backgroundColor: Colors.teal,
+            padding: EdgeInsets.symmetric(horizontal: 27, vertical: 12), // Adjust button size here
+            textStyle: TextStyle(fontSize: 18), // Adjust text size here
+            shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0), // Adjust the border radius here
+          ),
           ),
         ),
         const SizedBox(width: 16),
@@ -86,7 +97,13 @@ class _ImageToTextState extends State<ImageToText> {
           onPressed: () => _pickImage(ImageSource.gallery),
           child: const Text('Open Gallery'),
           style: ElevatedButton.styleFrom(
-            foregroundColor: Colors.white, backgroundColor: Colors.teal,
+            foregroundColor: Colors.white,
+            backgroundColor: Colors.teal,
+            padding: EdgeInsets.symmetric(horizontal: 27, vertical: 12), // Adjust button size here
+            textStyle: TextStyle(fontSize: 18), // Adjust text size here
+            shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0), // Adjust the border radius here
+          ),
           ),
         ),
       ],
@@ -119,49 +136,43 @@ class _ImageToTextState extends State<ImageToText> {
   }
 
   Widget _buildImagePreview() {
-    return Container(
-      width: double.infinity,
-      height: MediaQuery.of(context).size.height * 0.4,
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(12.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            spreadRadius: 5,
-            blurRadius: 7,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12.0),
-        child: Image.file(
-          selectedMedia!,
-          fit: BoxFit.cover,
+    if (selectedMedia == null) {
+      return _buildBlankCard(); // Show blank card if no image is selected
+    } else {
+      return Container(
+        width: 600, // Set your desired width
+        height: 470, // Set your desired height
+        decoration: BoxDecoration(
+          color: Colors.grey[200],
+          borderRadius: BorderRadius.circular(5.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              spreadRadius: 5,
+              blurRadius: 7,
+              offset: const Offset(0, 3),
+            ),
+          ],
         ),
-      ),
-    );
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12.0),
+          child: Image.file(
+            selectedMedia!,
+            fit: BoxFit.cover, // Adjust how the image should be resized
+          ),
+        ),
+      );
+    }
   }
 
-  Widget _buildExtractTextView() {
-    if (_isLoading) {
-      return Center(
-        child: CircularProgressIndicator(),
-      );
-    }
-
-    if (extractedText == null) {
-      return const Center(
-        child: Text("Take/Choose image"),
-      );
-    }
-
+  Widget _buildBlankCard() {
     return Container(
-      padding: const EdgeInsets.all(16.0),
+      width: 600, // Set your desired width
+      height: 470, // Set your desired height
       decoration: BoxDecoration(
-        color: Colors.teal[50],
+        color: Colors.grey[300], // Light grey for the blank state
         borderRadius: BorderRadius.circular(12.0),
+        border: Border.all(color: Colors.grey), // Optional border
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -171,20 +182,11 @@ class _ImageToTextState extends State<ImageToText> {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            extractedText!,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-              color: Colors.teal,
-            ),
-            textAlign: TextAlign.start,
-          ),
-          const SizedBox(height: 10),
-        ],
+      child: Center(
+        child: Text(
+          'No image selected',
+          style: TextStyle(color: Colors.grey[600], fontSize: 18), // Text style for the blank state
+        ),
       ),
     );
   }

@@ -36,10 +36,6 @@ dependencies:
   cupertino_icons: ^1.0.6
   iconsax: ^0.0.8
 
-  #hasara dependencies
-  google_maps_flutter: ^2.5.0
-  location: ^5.0.0
-
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
+import 'package:location/location.dart' as location_package; // Alias location package
+import 'package:geocoding/geocoding.dart'; // Import geocoding package for converting address to coordinates
 
 class LocationView extends StatefulWidget {
   const LocationView({super.key});
@@ -10,9 +11,12 @@ class LocationView extends StatefulWidget {
 }
 
 class _LocationViewState extends State<LocationView> {
-  Location _locationController = Location();
+  // Use the alias for the location package
+  location_package.Location _locationController = location_package.Location();
   LatLng? _currentP;
+  LatLng? _searchedLocation; // For storing the searched location
   GoogleMapController? _mapController; // Map controller
+  TextEditingController _searchController = TextEditingController(); // Controller for search input
   static const String _locationText = "Find Your Restaurant"; // Static text for AppBar
 
   @override
@@ -44,36 +48,79 @@ class _LocationViewState extends State<LocationView> {
             ],
           ),
         ),
-        child: Center(
-          child: _currentP == null
-              ? const Center(child: Text("Loading...")) // Show a loading message until the current location is obtained
-              : Container(
-                  height: 550, // Set the height for the map container
-                  width: 500, // Set the width for the map container
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10), // Optional rounded corners
-                  ),
-                  child: GoogleMap(
-                    onMapCreated: (GoogleMapController controller) {
-                      _mapController = controller;
-                      // Move the camera to the current location when the map is created
-                      _moveCamera(_currentP!);
-                    },
-                    initialCameraPosition: CameraPosition(
-                      target: _currentP!, // Use the current location as the initial position
-                      zoom: 13,
+        child: Stack(
+          children: [
+            _currentP == null
+                ? const Center(child: Text("Loading...")) // Show a loading message until the current location is obtained
+                : Container(
+                    height: double.infinity, // Set the height for the map container
+                    width: double.infinity, // Make map fill the width
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10), // Optional rounded corners
                     ),
-                    markers: {
-                      Marker(
-                        markerId: const MarkerId("_currentLocation"),
-                        icon: BitmapDescriptor.defaultMarkerWithHue(
-                          BitmapDescriptor.hueBlue,
-                        ),
-                        position: _currentP!,
+                    child: GoogleMap(
+                      onMapCreated: (GoogleMapController controller) {
+                        _mapController = controller;
+                        // Move the camera to the current location when the map is created
+                        _moveCamera(_currentP!);
+                      },
+                      initialCameraPosition: CameraPosition(
+                        target: _currentP!, // Use the current location as the initial position
+                        zoom: 13,
                       ),
-                    },
+                      markers: {
+                        Marker(
+                          markerId: const MarkerId("_currentLocation"),
+                          icon: BitmapDescriptor.defaultMarkerWithHue(
+                            BitmapDescriptor.hueBlue,
+                          ),
+                          position: _currentP!,
+                        ),
+                        if (_searchedLocation != null) // Add marker for searched location
+                          Marker(
+                            markerId: const MarkerId("_searchedLocation"),
+                            icon: BitmapDescriptor.defaultMarkerWithHue(
+                              BitmapDescriptor.hueRed,
+                            ),
+                            position: _searchedLocation!,
+                          ),
+                      },
+                    ),
                   ),
+
+            // Search bar overlay
+            Positioned(
+              top: 10,
+              left: 15,
+              right: 15,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 10,
+                      offset: Offset(0, 5),
+                    ),
+                  ],
                 ),
+                child: TextField(
+                  controller: _searchController,
+                  decoration: const InputDecoration(
+                    hintText: "Search location...",
+                    border: InputBorder.none,
+                    suffixIcon: Icon(Icons.search),
+                  ),
+                  onSubmitted: (value) {
+                    // Perform search on submit
+                    _searchPlace(value);
+                  },
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -82,7 +129,7 @@ class _LocationViewState extends State<LocationView> {
   // Fetch location updates
   Future<void> getLocationUpdates() async {
     bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
+    location_package.PermissionStatus _permissionGranted;
 
     // Check if service is enabled
     _serviceEnabled = await _locationController.serviceEnabled();
@@ -95,15 +142,15 @@ class _LocationViewState extends State<LocationView> {
 
     // Check for permission
     _permissionGranted = await _locationController.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
+    if (_permissionGranted == location_package.PermissionStatus.denied) {
       _permissionGranted = await _locationController.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
+      if (_permissionGranted != location_package.PermissionStatus.granted) {
         return;
       }
     }
 
     // Listen to location changes
-    _locationController.onLocationChanged.listen((LocationData currentLocation) {
+    _locationController.onLocationChanged.listen((location_package.LocationData currentLocation) {
       if (currentLocation.latitude != null && currentLocation.longitude != null) {
         setState(() {
           // Update the current location without changing the AppBar text
@@ -127,6 +174,23 @@ class _LocationViewState extends State<LocationView> {
           zoom: 14,
         ),
       ));
+    }
+  }
+
+  // Handle location search and move the camera to the searched location
+  Future<void> _searchPlace(String query) async {
+    try {
+      List<Location> locations = await locationFromAddress(query); // Use geocoding to get coordinates
+      if (locations.isNotEmpty) {
+        final newPosition = LatLng(locations.first.latitude, locations.first.longitude);
+        setState(() {
+          _searchedLocation = newPosition; // Store the searched location
+        });
+        _moveCamera(newPosition); // Move the map camera to the searched location
+        print("Searched location: $_searchedLocation");
+      }
+    } catch (e) {
+      print("Error occurred while searching for the location: $e");
     }
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:eat_better/pages/home.dart';
 import 'package:eat_better/pages/food_analysis.dart';
 import 'package:eat_better/pages/recipe_search.dart';
+import 'package:eat_better/pages/hasara/location_view.dart';
 import 'package:eat_better/pages/saved_recipes.dart';
 import 'package:eat_better/navigation_menu.dart';
 
@@ -15,6 +16,7 @@ void main() => runApp(
           '/home': (context) => const HomePage(),
           '/recipe_search': (context) => const RecipeSearch(),
           '/food_analysis': (context) => const FoodAnalysis(),
+          '/location_view': (context) => const LocationView(),
           '/saved_recipes': (context) => const SavedRecipes(),
           '/image_to_text': (context) => const ImageToText(),
         },

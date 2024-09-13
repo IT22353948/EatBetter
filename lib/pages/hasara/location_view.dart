@@ -11,11 +11,8 @@ class LocationView extends StatefulWidget {
 
 class _LocationViewState extends State<LocationView> {
   Location _locationController = Location();
-  // Initial camera position for GooglePlex
-  static const LatLng _pGooglePlex = LatLng(37.4223, -122.0848);
-  // Another location for Apple Park
-  static const LatLng _pApplePark = LatLng(37.3346, -122.0090);
   LatLng? _currentP;
+  GoogleMapController? _mapController; // Map controller
   static const String _locationText = "Find Your Restaurant"; // Static text for AppBar
 
   @override
@@ -49,7 +46,7 @@ class _LocationViewState extends State<LocationView> {
         ),
         child: Center(
           child: _currentP == null
-              ? const Center(child: Text("Loading..."))
+              ? const Center(child: Text("Loading...")) // Show a loading message until the current location is obtained
               : Container(
                   height: 550, // Set the height for the map container
                   width: 500, // Set the width for the map container
@@ -57,25 +54,22 @@ class _LocationViewState extends State<LocationView> {
                     borderRadius: BorderRadius.circular(10), // Optional rounded corners
                   ),
                   child: GoogleMap(
-                    initialCameraPosition: const CameraPosition(
-                      target: _pGooglePlex,
+                    onMapCreated: (GoogleMapController controller) {
+                      _mapController = controller;
+                      // Move the camera to the current location when the map is created
+                      _moveCamera(_currentP!);
+                    },
+                    initialCameraPosition: CameraPosition(
+                      target: _currentP!, // Use the current location as the initial position
                       zoom: 13,
-                    ),//add comment
+                    ),
                     markers: {
                       Marker(
                         markerId: const MarkerId("_currentLocation"),
-                        icon: BitmapDescriptor.defaultMarker,
+                        icon: BitmapDescriptor.defaultMarkerWithHue(
+                          BitmapDescriptor.hueBlue,
+                        ),
                         position: _currentP!,
-                      ),
-                      const Marker(
-                        markerId: MarkerId("_sourceLocation"),
-                        icon: BitmapDescriptor.defaultMarker,
-                        position: _pGooglePlex,
-                      ),
-                      const Marker(
-                        markerId: MarkerId("_destinationLocation"),
-                        icon: BitmapDescriptor.defaultMarker,
-                        position: _pApplePark,
                       ),
                     },
                   ),
@@ -85,6 +79,7 @@ class _LocationViewState extends State<LocationView> {
     );
   }
 
+  // Fetch location updates
   Future<void> getLocationUpdates() async {
     bool _serviceEnabled;
     PermissionStatus _permissionGranted;
@@ -114,8 +109,24 @@ class _LocationViewState extends State<LocationView> {
           // Update the current location without changing the AppBar text
           _currentP = LatLng(currentLocation.latitude!, currentLocation.longitude!);
           print(_currentP); // Log the current coordinates
+          // Move the camera to the current location
+          if (_mapController != null) {
+            _moveCamera(_currentP!);
+          }
         });
       }
     });
+  }
+
+  // Move the camera to the provided location
+  Future<void> _moveCamera(LatLng position) async {
+    if (_mapController != null) {
+      await _mapController!.animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: position,
+          zoom: 14,
+        ),
+      ));
+    }
   }
 }

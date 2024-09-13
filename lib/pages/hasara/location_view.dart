@@ -60,7 +60,7 @@ class _LocationViewState extends State<LocationView> {
                     initialCameraPosition: const CameraPosition(
                       target: _pGooglePlex,
                       zoom: 13,
-                    ),
+                    ),//add comment
                     markers: {
                       Marker(
                         markerId: const MarkerId("_currentLocation"),

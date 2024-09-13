@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:eat_better/pages/home.dart' as homePage;
+import 'package:eat_better/pages/home.dart';
 import 'package:eat_better/pages/food_analysis.dart';
 import 'package:eat_better/pages/recipe_search.dart';
 import 'package:eat_better/pages/hasara/location_view.dart';
@@ -16,7 +16,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
-    homePage.HomePage(),
+    HomePage(),
     RecipeSearch(),
     FoodAnalysis(),
     LocationView(),

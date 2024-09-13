@@ -2,74 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
-void main() => runApp(const MyApp());
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class LocationView extends StatefulWidget {
+  const LocationView({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Combined App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const HomePage(),
-    );
-  }
+  State<LocationView> createState() => _LocationViewState();
 }
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Combined Map and Location View'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const MapPage()),
-                );
-              },
-              child: const Text('Go to Map Page'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LocationView()),
-                );
-              },
-              child: const Text('Go to Location View'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class MapPage extends StatefulWidget {
-  const MapPage({super.key});
-
-  @override
-  State<MapPage> createState() => _MapPageState();
-}
-
-class _MapPageState extends State<MapPage> {
+class _LocationViewState extends State<LocationView> {
   Location _locationController = Location();
+  // Initial camera position for GooglePlex
   static const LatLng _pGooglePlex = LatLng(37.4223, -122.0848);
+  // Another location for Apple Park
   static const LatLng _pApplePark = LatLng(37.3346, -122.0090);
-  LatLng? _currentP = null;
+  LatLng? _currentP;
+  String _locationText = "Find Your Restaurant...";
 
   @override
   void initState() {
@@ -81,38 +28,60 @@ class _MapPageState extends State<MapPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Map Page'),
+        title: Text(
+          _locationText,
+          style: TextStyle(color: Colors.white), // Set text color to white
+        ),
+        backgroundColor: const Color(0xFFF86A2E),
+        iconTheme: const IconThemeData(color: Colors.white), // Optional: Set icon color to white
       ),
       body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        child: _currentP == null
-            ? const Center(
-                child: Text("Loading..."),
-              )
-            : GoogleMap(
-                initialCameraPosition: const CameraPosition(
-                  target: _pGooglePlex,
-                  zoom: 13,
+        // Apply gradient background
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color.fromARGB(126, 248, 100, 37), // Orange
+              Colors.white, // White
+            ],
+          ),
+        ),
+        child: Center(
+          child: _currentP == null
+              ? const Center(child: Text("Loading..."))
+              : Container(
+                  height: 550, // Set the height for the map container
+                  width: 500, // Set the width for the map container
+                  decoration: BoxDecoration(
+                    // border: Border.all(color: Colors.black), // Optional border
+                    borderRadius: BorderRadius.circular(10), // Optional rounded corners
+                  ),
+                  child: GoogleMap(
+                    initialCameraPosition: const CameraPosition(
+                      target: _pGooglePlex,
+                      zoom: 13,
+                    ),
+                    markers: {
+                      Marker(
+                        markerId: MarkerId("_currentLocation"),
+                        icon: BitmapDescriptor.defaultMarker,
+                        position: _currentP!,
+                      ),
+                      const Marker(
+                        markerId: MarkerId("_sourceLocation"),
+                        icon: BitmapDescriptor.defaultMarker,
+                        position: _pGooglePlex,
+                      ),
+                      const Marker(
+                        markerId: MarkerId("_destinationLocation"),
+                        icon: BitmapDescriptor.defaultMarker,
+                        position: _pApplePark,
+                      ),
+                    },
+                  ),
                 ),
-                markers: {
-                  Marker(
-                    markerId: const MarkerId("_currentLocation"),
-                    icon: BitmapDescriptor.defaultMarker,
-                    position: _currentP!,
-                  ),
-                  const Marker(
-                    markerId: MarkerId("_sourceLocation"),
-                    icon: BitmapDescriptor.defaultMarker,
-                    position: _pGooglePlex,
-                  ),
-                  const Marker(
-                    markerId: MarkerId("_destinationLocation"),
-                    icon: BitmapDescriptor.defaultMarker,
-                    position: _pApplePark,
-                  ),
-                },
-              ),
+        ),
       ),
     );
   }
@@ -141,51 +110,10 @@ class _MapPageState extends State<MapPage> {
       if (currentLocation.latitude != null && currentLocation.longitude != null) {
         setState(() {
           _currentP = LatLng(currentLocation.latitude!, currentLocation.longitude!);
+          _locationText = "Lat: ${currentLocation.latitude!.toStringAsFixed(4)}, Long: ${currentLocation.longitude!.toStringAsFixed(4)}";
           print(_currentP);
         });
       }
     });
-  }
-}
-
-class LocationView extends StatefulWidget {
-  const LocationView({super.key});
-
-  @override
-  State<LocationView> createState() => _LocationViewState();
-}
-
-class _LocationViewState extends State<LocationView> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Location View'),
-      ),
-      body: Container(
-        // Apply gradient background
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color.fromARGB(126, 248, 100, 37), // Orange
-              Colors.white, // White
-            ],
-          ),
-        ),
-        child: const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                'Location View',
-                style: TextStyle(fontSize: 24),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }

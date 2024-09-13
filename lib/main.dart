@@ -1,6 +1,6 @@
 import 'package:eat_better/pages/prabashwara/Image_To_Text.dart';
 import 'package:flutter/material.dart';
-import 'package:eat_better/pages/home.dart' as homePage;
+import 'package:eat_better/pages/home.dart';
 import 'package:eat_better/pages/food_analysis.dart';
 import 'package:eat_better/pages/recipe_search.dart';
 import 'package:eat_better/pages/hasara/location_view.dart';
@@ -13,7 +13,7 @@ void main() => runApp(
         initialRoute: '/',
         routes: {
           '/': (context) => const NavigationMenu(),
-          '/home': (context) => const homePage.HomePage(),
+          '/home': (context) => const HomePage(),
           '/recipe_search': (context) => const RecipeSearch(),
           '/food_analysis': (context) => const FoodAnalysis(),
           '/location_view': (context) => const LocationView(),

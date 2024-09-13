@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:eat_better/pages/home.dart';
+import 'package:eat_better/pages/home.dart' as homePage;
 import 'package:eat_better/pages/food_analysis.dart';
 import 'package:eat_better/pages/recipe_search.dart';
-import 'package:eat_better/pages/location_view.dart';
+import 'package:eat_better/pages/hasara/location_view.dart';
 import 'package:eat_better/pages/saved_recipes.dart';
 
 class NavigationMenu extends StatefulWidget {
@@ -16,7 +16,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
-    HomePage(),
+    homePage.HomePage(),
     RecipeSearch(),
     FoodAnalysis(),
     LocationView(),

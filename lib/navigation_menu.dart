@@ -59,26 +59,26 @@ class _NavigationMenuState extends State<NavigationMenu> {
             selectedItemColor: Color.fromARGB(248, 246, 106, 46),
             unselectedItemColor: const Color.fromARGB(255, 0, 0, 0),
             showUnselectedLabels: true,
-            iconSize: 25,
+            iconSize: 30,
             items: const [
               BottomNavigationBarItem(
-                icon: Icon(Icons.menu_book_rounded),
+                icon: ImageIcon(AssetImage('assets/icons/menu.png')),
                 label: 'Menu',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.local_pizza_rounded),
+                icon: ImageIcon(AssetImage('assets/icons/recipe.png')),
                 label: 'Recipe',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.analytics_outlined),
+                icon: ImageIcon(AssetImage('assets/icons/analitics.png')),
                 label: 'Analytics',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.location_on_outlined),
+                icon: ImageIcon(AssetImage('assets/icons/location.png')),
                 label: 'Location',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.bookmark),
+                icon: ImageIcon(AssetImage('assets/icons/saved.png')),
                 label: 'Saved',
               ),
             ],

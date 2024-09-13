@@ -42,7 +42,7 @@ class _LocationViewState extends State<LocationView> {
             begin: Alignment.topLeft,
             end: Alignment.bottomCenter,
             colors: [
-              Color.fromARGB(126, 248, 100, 37), // Orange
+              Color.fromARGB(126, 248, 100, 37), // Orange bar
               Colors.white, // White
             ],
           ),

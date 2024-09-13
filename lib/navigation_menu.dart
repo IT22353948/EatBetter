@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:eat_better/pages/home.dart';
 import 'package:eat_better/pages/food_analysis.dart';
 import 'package:eat_better/pages/recipe_search.dart';
-import 'package:eat_better/pages/location_view.dart';
+import 'package:eat_better/pages/hasara/location_view.dart';
 import 'package:eat_better/pages/saved_recipes.dart';
 
 class NavigationMenu extends StatefulWidget {

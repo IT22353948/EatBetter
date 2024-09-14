@@ -1,3 +1,4 @@
+import 'package:eat_better/pages/prabashwara/Gemini_suggest.dart';
 import 'package:flutter/material.dart';
 
 class NextPage extends StatelessWidget {
@@ -23,7 +24,8 @@ class NextPage extends StatelessWidget {
             children: [
               // Container with custom width and height
               Container(
-                width: double.infinity, // Set to take the full width of the screen
+                width:
+                    double.infinity, // Set to take the full width of the screen
                 height: 600, // Set height to 600 pixels
                 padding: const EdgeInsets.all(16.0),
                 margin: const EdgeInsets.only(bottom: 20.0),
@@ -31,7 +33,8 @@ class NextPage extends StatelessWidget {
                   color: Colors.grey[200],
                   borderRadius: BorderRadius.circular(8.0),
                 ),
-                child: SingleChildScrollView( // In case text overflows
+                child: SingleChildScrollView(
+                  // In case text overflows
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -50,18 +53,26 @@ class NextPage extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       // First button action
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const GeminiSuggest()),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 60.0), // Custom button size
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 20.0,
+                          horizontal: 60.0), // Custom button size
                       backgroundColor: Colors.teal, // Button background color
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0), // Rounded corners
+                        borderRadius:
+                            BorderRadius.circular(8.0), // Rounded corners
                       ),
                     ),
                     child: const Text(
                       'Give Suggest',
                       style: TextStyle(
-                        fontSize: 18, 
+                        fontSize: 18,
                         color: Colors.white, // Text color
                       ),
                     ),
@@ -72,10 +83,13 @@ class NextPage extends StatelessWidget {
                       // Second button action
                     },
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 30.0), // Adjusted button size
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 20.0,
+                          horizontal: 30.0), // Adjusted button size
                       backgroundColor: Colors.orange, // Button background color
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0), // Adjusted border radius
+                        borderRadius: BorderRadius.circular(
+                            8.0), // Adjusted border radius
                       ),
                     ),
                     child: const Text(
@@ -102,9 +116,14 @@ class NextPage extends StatelessWidget {
 
     // Filter out lines that contain only numbers, special characters, or single characters
     return lines
-        .where((line) => line.isNotEmpty && RegExp(r'[a-zA-Z]').hasMatch(line)) // Check if the line contains any alphabetic characters
-        .map((line) => line.replaceAll(RegExp(r'[^a-zA-Z\s]'), '')) // Remove special characters and numbers
-        .where((line) => line.split(' ').any((word) => word.length > 1)) // Remove lines with single characters
+        .where((line) =>
+            line.isNotEmpty &&
+            RegExp(r'[a-zA-Z]').hasMatch(
+                line)) // Check if the line contains any alphabetic characters
+        .map((line) => line.replaceAll(RegExp(r'[^a-zA-Z\s]'),
+            '')) // Remove special characters and numbers
+        .where((line) => line.split(' ').any(
+            (word) => word.length > 1)) // Remove lines with single characters
         .toList();
   }
 

@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class GeminiSuggest extends StatefulWidget {
+  const GeminiSuggest({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<GeminiSuggest> createState() => _GeminiSuggestState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _GeminiSuggestState extends State<GeminiSuggest> {
 
   final Gemini gemini = Gemini.instance;
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as location_package;
 import 'package:geocoding/geocoding.dart'; // Import for geocoding
+import '../home.dart'; // Import your Home page
 
 class LocationView extends StatefulWidget {
   const LocationView({super.key});
@@ -28,7 +29,31 @@ class _LocationViewState extends State<LocationView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text( // Constant AppBar title
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0), // Add padding for a circular icon
+          child: IconButton(
+            icon: Container(
+              width: 45, // Larger width for the circle
+              height: 45, // Larger height for the circle
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white, // Background color for the circle
+              ),
+              child: const Icon(
+                Icons.arrow_back, // Back arrow icon
+                color: Color(0xFFF86A2E), // Color for the arrow
+                size: 24, // Adjust the size of the arrow if needed
+              ),
+            ),
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const HomePage()), // Navigate to the home page
+              );
+            },
+          ),
+        ),
+        title: const Text(
           _locationText,
           style: TextStyle(color: Colors.white),
         ),
@@ -36,7 +61,6 @@ class _LocationViewState extends State<LocationView> {
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Container(
-        // Gradient background
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,

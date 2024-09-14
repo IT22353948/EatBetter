@@ -8,10 +8,11 @@ import 'package:eat_better/pages/hasara/location_view.dart';
 import 'package:eat_better/pages/saved_recipes.dart';
 import 'package:eat_better/navigation_menu.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
+import 'package:eat_better/splash_screen.dart';
 
 void main() async {
-
-  WidgetsFlutterBinding.ensureInitialized(); // Ensures that all bindings are initialized
+  WidgetsFlutterBinding
+      .ensureInitialized(); // Ensures that all bindings are initialized
 
   Gemini.init(apiKey: GEMINI_API_KEY); //  initialization of Gemini
 
@@ -20,7 +21,8 @@ void main() async {
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       routes: {
-        '/': (context) => const NavigationMenu(),
+        '/': (context) => const SplashScreen(),
+        '/navigation': (context) => const NavigationMenu(),
         '/home': (context) => const HomePage(),
         '/recipe_search': (context) => const RecipeSearch(),
         '/food_analysis': (context) => const FoodAnalysis(),

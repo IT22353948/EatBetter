@@ -39,11 +39,12 @@ dependencies:
   location: ^5.0.0
   google_places_flutter: ^2.0.9
   geocoding: ^3.0.0
-
+  http: ^1.2.2
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  http: ^1.2.2
+  # http: ^1.2.2
 
   #prabashwara's depends
   google_mlkit_text_recognition: ^0.13.0

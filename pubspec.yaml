@@ -38,6 +38,8 @@ dependencies:
   google_maps_flutter: ^2.5.0
   location: ^5.0.0
   google_places_flutter: ^2.0.9
+  flutter_gemini: ^2.0.5
+  dash_chat_2: ^0.0.21
 
 dev_dependencies:
   flutter_test:

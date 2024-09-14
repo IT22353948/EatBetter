@@ -15,6 +15,8 @@ class NavigationMenu extends StatefulWidget {
 class _NavigationMenuState extends State<NavigationMenu> {
   int _currentIndex = 0;
 
+  final PageController _pageController = PageController();
+
   final List<Widget> _pages = [
     HomePage(),
     RecipeSearch(),
@@ -25,9 +27,10 @@ class _NavigationMenuState extends State<NavigationMenu> {
 
   Future<bool> _onPop() async {
     if (_currentIndex != 0) {
-      // If not on the Menu (index 0), navigate to Menu when back button is pressed
       setState(() {
         _currentIndex = 0;
+        _pageController
+            .jumpToPage(0); // Update PageView when back button is pressed
       });
       return false; // Prevent default back button behavior
     } else {
@@ -38,12 +41,16 @@ class _NavigationMenuState extends State<NavigationMenu> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      //this is depricated we have to use PopScope
       onWillPop: _onPop,
       child: Scaffold(
-        // IndexedStack keeps the state of pages
-        body: IndexedStack(
-          index: _currentIndex,
+        body: PageView(
+          controller: _pageController, // Add the PageController
+          onPageChanged: (index) {
+            setState(() {
+              _currentIndex =
+                  index; // Update the bottom navigation bar when the page changes
+            });
+          },
           children: _pages,
         ),
         bottomNavigationBar: SizedBox(
@@ -54,6 +61,12 @@ class _NavigationMenuState extends State<NavigationMenu> {
             onTap: (index) {
               setState(() {
                 _currentIndex = index;
+                _pageController.animateToPage(
+                  // Switch the PageView
+                  index,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                );
               });
             },
             selectedItemColor: Color.fromARGB(248, 246, 106, 46),

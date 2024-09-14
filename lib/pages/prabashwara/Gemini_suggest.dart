@@ -5,7 +5,7 @@ import 'package:flutter_gemini/flutter_gemini.dart';
 
 
 class GeminiSuggest extends StatefulWidget {
-  const GeminiSuggest({Key? key}) : super(key: key);
+  const GeminiSuggest ({super.key});
 
   @override
   State<GeminiSuggest> createState() => _GeminiSuggestState();
@@ -13,7 +13,7 @@ class GeminiSuggest extends StatefulWidget {
 
 class _GeminiSuggestState extends State<GeminiSuggest> {
 
-  final Gemini gemini = Gemini.instance;
+   Gemini gemini = Gemini.instance;
 
   final ChatUser currentUser = ChatUser(id: "0" , firstName: "user"); // Define current user
   final ChatUser geminiUser = ChatUser(id: "1" ,

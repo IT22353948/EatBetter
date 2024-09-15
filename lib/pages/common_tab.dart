@@ -18,7 +18,6 @@ class CommonTab extends StatelessWidget {
             child: TabBar(
               unselectedLabelColor: Color.fromARGB(248, 246, 106, 46),
               labelColor: Color.fromARGB(248, 255, 255, 255),
-              dividerColor: Colors.white,
               indicator: BoxDecoration(
                 color: const Color.fromARGB(248, 246, 106, 46),
                 borderRadius: BorderRadius.circular(10),
@@ -37,8 +36,8 @@ class CommonTab extends StatelessWidget {
           // TabBarView
           SizedBox(
             height: h * .3,
-            child: TabBarView(
-              children: const [
+            child: const TabBarView(
+              children: [
                 Text('Rices'),
                 Text('Pastas'),
                 Text('Breads'),

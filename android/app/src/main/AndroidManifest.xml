@@ -12,7 +12,8 @@
     <!-- google map permission-->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
-    <!-- <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/> -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
 
     <application
@@ -48,7 +49,7 @@
             android:value="2" />
 
         <meta-data android:name = "com.google.android.geo.API_KEY"
-            android:value="AIzaSyBfZ8hxegR6OHUeEGlSCZ2LHGHWNX6sOng"/>
+            android:value="AIzaSyA8HELnB-NjMiiCEzBUiEJKEiDxJ_ZUKJU"/>
             
     </application>
     <!-- Required to query activities that can process text, see:

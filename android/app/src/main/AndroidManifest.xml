@@ -16,7 +16,7 @@
 
 
     <application
-        android:label="eat_better"
+        android:label="EatBetter"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

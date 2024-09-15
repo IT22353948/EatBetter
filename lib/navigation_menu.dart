@@ -61,11 +61,9 @@ class _NavigationMenuState extends State<NavigationMenu> {
             onTap: (index) {
               setState(() {
                 _currentIndex = index;
-                _pageController.animateToPage(
+                _pageController.jumpToPage(
                   // Switch the PageView
                   index,
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
                 );
               });
             },

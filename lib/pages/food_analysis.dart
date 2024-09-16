@@ -81,7 +81,7 @@ class _FoodAnalysisState extends State<FoodAnalysis> {
                     },
                     style: ButtonStyle(
                       backgroundColor: const WidgetStatePropertyAll<Color>(
-                        Color.fromARGB(248, 246, 106, 46),
+                        Color.fromARGB(211, 246, 106, 46),
                       ),
                       minimumSize: WidgetStatePropertyAll<Size>(
                         Size(w, 60), // Make it the same width as the TextField
@@ -96,7 +96,7 @@ class _FoodAnalysisState extends State<FoodAnalysis> {
                     child: Text(
                       'Analyze',
                       style: TextStyle(
-                          fontSize: w * .07,
+                          fontSize: w * .06,
                           color: Colors.white,
                           fontWeight: FontWeight.bold),
                     ),

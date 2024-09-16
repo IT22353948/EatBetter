@@ -14,7 +14,7 @@ class LocationView extends StatefulWidget {
 }
 
 class _LocationViewState extends State<LocationView> {
-  location_package.Location _locationController = location_package.Location();
+ final location_package.Location _locationController = location_package.Location();
   LatLng? _currentP; // Current location
   LatLng? _searchedLocation; // Searched location
   GoogleMapController? _mapController;

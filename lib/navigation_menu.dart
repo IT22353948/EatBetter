@@ -62,7 +62,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
               setState(() {
                 _currentIndex = index;
                 _pageController.animateToPage(
-                  // Switch the PageView
+                 // Switch the PageView,
                   index,
                   duration: const Duration(milliseconds: 300),
                   curve: Curves.easeInOut,

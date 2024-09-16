@@ -18,8 +18,8 @@
     <application
         android:label="EatBetter"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
-        android:hardwareAccelerated="true"
+        android:icon="@mipmap/ic_launcher"
+        android:hardwareAccelerated="true">
         <activity
             android:name=".MainActivity"
             android:exported="true"

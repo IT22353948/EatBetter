@@ -4,7 +4,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as location_package;
 import 'package:geocoding/geocoding.dart'; // Import for geocoding
 import 'package:http/http.dart' as http; // Import for making API requests
-import '../home.dart'; // Import your Home page
 
 class LocationView extends StatefulWidget {
   const LocationView({super.key});
@@ -14,7 +13,7 @@ class LocationView extends StatefulWidget {
 }
 
 class _LocationViewState extends State<LocationView> {
- final location_package.Location _locationController = location_package.Location();
+  final location_package.Location _locationController = location_package.Location();
   LatLng? _currentP; // Current location
   LatLng? _searchedLocation; // Searched location
   GoogleMapController? _mapController;
@@ -23,7 +22,7 @@ class _LocationViewState extends State<LocationView> {
   static const String _locationText = "Find Your Restaurant";
 
   //  Google Places API key
-  final String _placesApiKey = "AIzaSyA8HELnB-NjMiiCEzBUiEJKEiDxJ_ZUKJU";
+  final String _placesApiKey = "AIzaSyCIOwQeu3gc7WmTqb_aqnznqufJalwZ_s4";
 
   @override
   void initState() {
@@ -35,30 +34,6 @@ class _LocationViewState extends State<LocationView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0), // Add padding for a circular icon
-          child: IconButton(
-            icon: Container(
-              width: 45, // Larger width for the circle
-              height: 45, // Larger height for the circle
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white, // Background color for the circle
-              ),
-              child: const Icon(
-                Icons.arrow_back, // Back arrow icon
-                color: Color(0xFFF86A2E), // Color for the arrow
-                size: 24, // Adjust the size of the arrow if needed
-              ),
-            ),
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const HomePage()), // Navigate to the home page
-              );
-            },
-          ),
-        ),
         title: const Text(
           _locationText,
           style: TextStyle(color: Colors.white),

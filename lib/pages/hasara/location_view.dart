@@ -24,6 +24,9 @@ class _LocationViewState extends State<LocationView> {
   //  Google Places API key
   final String _placesApiKey = "AIzaSyCIOwQeu3gc7WmTqb_aqnznqufJalwZ_s4";
 
+  // List to hold nearby restaurant data
+  List<dynamic> _restaurants = [];
+
   @override
   void initState() {
     super.initState();
@@ -41,73 +44,169 @@ class _LocationViewState extends State<LocationView> {
         backgroundColor: const Color(0xFFF86A2E),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color.fromARGB(126, 248, 100, 37), // Orange
-              Colors.white, // White
-            ],
-          ),
-        ),
-        child: Stack(
-          children: [
-            _currentP == null
-                ? const Center(child: Text("Loading...")) // Show a loading message while fetching the location
-                : Container(
-                    height: double.infinity,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10), // Optional: Rounded corners
-                    ),
-                    child: GoogleMap(
-                      onMapCreated: (GoogleMapController controller) {
-                        _mapController = controller;
-                        _moveCamera(_currentP!);
-                      },
-                      initialCameraPosition: CameraPosition(
-                        target: _currentP!,
-                        zoom: 13,
-                      ),
-                      markers: _markers, // Set all markers, including restaurants
-                    ),
+      body: Stack(
+        children: [
+          _currentP == null
+              ? const Center(child: Text("Loading...")) // Show a loading message while fetching the location
+              : Container(
+                  height: double.infinity,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10), // Optional: Rounded corners
                   ),
+                  child: GoogleMap(
+                    onMapCreated: (GoogleMapController controller) {
+                      _mapController = controller;
+                      _moveCamera(_currentP!);
+                    },
+                    initialCameraPosition: CameraPosition(
+                      target: _currentP!,
+                      zoom: 13,
+                    ),
+                    markers: _markers, // Set all markers, including restaurants
+                  ),
+                ),
 
-            // Search bar overlay at the top
-            Positioned(
-              top: 10,
-              left: 15,
-              right: 15,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                decoration: BoxDecoration(
+          // Search bar overlay at the top
+          Positioned(
+            top: 10,
+            left: 15,
+            right: 15,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 10,
+                    offset: Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: TextField(
+                controller: _searchController,
+                decoration: const InputDecoration(
+                  hintText: "Search location...",
+                  border: InputBorder.none,
+                  suffixIcon: Icon(Icons.search),
+                ),
+                onSubmitted: (value) {
+                  _searchPlace(value); // Search and mark location
+                },
+              ),
+            ),
+          ),
+
+          // DraggableScrollableSheet to show restaurant details in the bottom sheet
+          DraggableScrollableSheet(
+            initialChildSize: 0.25, // Initial size of the sheet when loaded
+            minChildSize: 0.25, // Minimum size of the sheet
+            maxChildSize: 0.35,  // Maximum size of the sheet
+            builder: (BuildContext context, ScrollController scrollController) {
+              return Container(
+                padding: const EdgeInsets.all(10),
+                decoration: const BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: const [
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                  boxShadow: [
                     BoxShadow(
                       color: Colors.black26,
                       blurRadius: 10,
-                      offset: Offset(0, 5),
+                      offset: Offset(0, -5),
                     ),
                   ],
                 ),
-                child: TextField(
-                  controller: _searchController,
-                  decoration: const InputDecoration(
-                    hintText: "Search location...",
-                    border: InputBorder.none,
-                    suffixIcon: Icon(Icons.search),
-                  ),
-                  onSubmitted: (value) {
-                    _searchPlace(value); // Search and mark location
-                  },
-                ),
-              ),
-            ),
-          ],
-        ),
+                child: _restaurants.isEmpty
+                    ? const Center(child: Text('No restaurants found'))
+                    : ListView.builder(
+                        controller: scrollController,
+                        scrollDirection: Axis.horizontal,  // Set scroll direction to horizontal
+                        itemCount: _restaurants.length,
+                        itemBuilder: (context, index) {
+                          final restaurant = _restaurants[index];
+                          String photoReference = restaurant['photos'] != null
+                              ? restaurant['photos'][0]['photo_reference']
+                              : ''; // Get photo reference if available
+
+                          // Restaurant photo URL using photo reference
+                          String photoUrl = photoReference.isNotEmpty
+                              ? 'https://maps.googleapis.com/maps/api/place/photo'
+                                '?maxwidth=400'
+                                '&photoreference=$photoReference'
+                                '&key=$_placesApiKey'
+                              : 'https://via.placeholder.com/400'; // Placeholder image if no photo available
+
+                          return Card(
+                            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15), // Rounded corners for the card
+                            ),
+                            color: const Color(0xFFF86A2E).withOpacity(0.85), // Orange mix background color
+                            child: SizedBox(
+                              width: 250, // Card width
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Restaurant image
+                                  ClipRRect(
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(15),
+                                      topRight: Radius.circular(15),
+                                    ),
+                                    child: Image.network(
+                                      photoUrl,
+                                      height: 120,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover, // Cover the image space
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(10),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          restaurant['name'] ?? 'Unknown Name',
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white, // White text on orange background
+                                          ),
+                                        ),
+                                        const SizedBox(height: 5),
+                                        Text(
+                                          'Rating: ${restaurant['rating'] ?? 'No rating'}',
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.white70,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Text(
+                                          restaurant['vicinity'] ?? 'No address provided',
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.white54,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
@@ -230,6 +329,7 @@ class _LocationViewState extends State<LocationView> {
           }).toSet();
 
           setState(() {
+            _restaurants = results; // Update the list of restaurants
             _markers.addAll(restaurantMarkers);
           });
         }

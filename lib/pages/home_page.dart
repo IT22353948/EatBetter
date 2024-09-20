@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'package:eat_better/pages/prabashwara/Preferences/preference_page.dart';
 import 'package:flutter/material.dart';
 import 'prabashwara/Image_To_Text.dart';
 import 'food_analysis.dart';
@@ -44,10 +45,10 @@ class HomePage extends StatelessWidget {
             ),
             _buildNavigationCard(
               context,
-              'Recipes',
+              'Choose your preferences ',
               'Explore and discover new recipes',
-              Icons.restaurant_menu,
-              Container(), // Replace with the actual Recipes screen
+              Icons.abc_sharp,
+              UserPreferencePage(), // Replace with the actual Recipes screen
               Colors.deepOrange, // Icon color
               Color(0xFF3498db), // Card border color
             ),

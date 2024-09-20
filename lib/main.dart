@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:eat_better/pages/prabashwara/consts.dart';
 import 'package:eat_better/pages/prabashwara/Image_To_Text.dart';
-import 'package:eat_better/pages/home.dart';
+import 'package:eat_better/pages/home_page.dart';
 import 'package:eat_better/pages/food_analysis.dart';
 import 'package:eat_better/pages/recipe_search.dart';
 import 'package:eat_better/pages/hasara/location_view.dart';

@@ -1,7 +1,8 @@
+import 'package:eat_better/authFile/auth.dart';
+import 'package:eat_better/authFile/login_register.dart';
+import 'package:eat_better/pages/home_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_crud/pages/authFile/auth.dart';
-import 'package:flutter_crud/pages/authFile/login_register.dart';
-import 'package:flutter_crud/pages/HomePage/home_page.dart';
+
 
 class WidgetTree extends StatefulWidget{
   const WidgetTree({ Key ? key}) :super(key: key);
@@ -18,7 +19,7 @@ class _WidgetTreeState extends State<WidgetTree>{
       stream: Auth().authStateChanges, 
       builder: (context , snapshot){
         if(snapshot.hasData){
-          return Homepage();
+          return HomePage();
         }else{
           return  const LoginPage();
         }

@@ -42,6 +42,7 @@ dependencies:
   flutter_gemini: ^2.0.5
   dash_chat_2: ^0.0.21
   http: ^1.2.2
+  url_launcher: ^6.0.20
  
 
 dev_dependencies:

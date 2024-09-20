@@ -21,11 +21,15 @@ class _LocationViewState extends State<LocationView> {
   final Set<Marker> _markers = {}; // Markers for map
   static const String _locationText = "Find Your Restaurant";
 
-  //  Google Places API key
+  // Google Places API key
   final String _placesApiKey = "AIzaSyCIOwQeu3gc7WmTqb_aqnznqufJalwZ_s4";
 
   // List to hold nearby restaurant data
   List<dynamic> _restaurants = [];
+
+  // State variables for the bottom sheet
+  bool _isSheetExpanded = false;
+  double _currentSheetSize = 0.25; // Adjust initial size as needed
 
   @override
   void initState() {
@@ -47,7 +51,7 @@ class _LocationViewState extends State<LocationView> {
       body: Stack(
         children: [
           _currentP == null
-              ? const Center(child: Text("Loading...")) // Show a loading message while fetching the location
+              ? const Center(child: Text("Loading...")) // Show loading message
               : Container(
                   height: double.infinity,
                   width: double.infinity,
@@ -99,11 +103,33 @@ class _LocationViewState extends State<LocationView> {
             ),
           ),
 
-          // DraggableScrollableSheet to show restaurant details in the bottom sheet
+          // Add the arrow button for toggling the restaurant view
+          Positioned(
+            bottom: 100, // Position above the bottom sheet
+            left: MediaQuery.of(context).size.width / 2 - 25,
+            child: GestureDetector(
+              onTap: _toggleBottomSheet,
+              child: Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: Colors.orange,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  _isSheetExpanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_up,
+                  color: Colors.white,
+                  size: 30,
+                ),
+              ),
+            ),
+          ),
+
+          // DraggableScrollableSheet for restaurant details
           DraggableScrollableSheet(
-            initialChildSize: 0.25, // Initial size of the sheet when loaded
-            minChildSize: 0.25, // Minimum size of the sheet
-            maxChildSize: 0.35,  // Maximum size of the sheet
+            initialChildSize: _currentSheetSize,
+            minChildSize: 0.25,
+            maxChildSize: 0.35,
             builder: (BuildContext context, ScrollController scrollController) {
               return Container(
                 padding: const EdgeInsets.all(10),
@@ -144,23 +170,24 @@ class _LocationViewState extends State<LocationView> {
                           return Card(
                             margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15), // Rounded corners for the card
+                              borderRadius: BorderRadius.circular(20), // Rounded corners for the card
                             ),
                             color: const Color(0xFFF86A2E).withOpacity(0.85), // Orange mix background color
                             child: SizedBox(
-                              width: 250, // Card width
+                              width: 320,// Card width
+                              height: 150, // Card height
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   // Restaurant image
                                   ClipRRect(
                                     borderRadius: const BorderRadius.only(
-                                      topLeft: Radius.circular(15),
-                                      topRight: Radius.circular(15),
+                                      topLeft: Radius.circular(20),
+                                      topRight: Radius.circular(20),
                                     ),
                                     child: Image.network(
                                       photoUrl,
-                                      height: 120,
+                                      height: 100,
                                       width: double.infinity,
                                       fit: BoxFit.cover, // Cover the image space
                                     ),
@@ -183,7 +210,8 @@ class _LocationViewState extends State<LocationView> {
                                           'Rating: ${restaurant['rating'] ?? 'No rating'}',
                                           style: const TextStyle(
                                             fontSize: 14,
-                                            color: Colors.white70,
+                                            color: Color.fromARGB(179, 251, 226, 226),
+                                            fontWeight: FontWeight.bold,
                                           ),
                                         ),
                                         const SizedBox(height: 10),
@@ -339,5 +367,13 @@ class _LocationViewState extends State<LocationView> {
     } catch (e) {
       print("Error fetching nearby restaurants: $e");
     }
+  }
+
+  // Toggle the bottom sheet visibility
+  void _toggleBottomSheet() {
+    setState(() {
+      _isSheetExpanded = !_isSheetExpanded;
+      _currentSheetSize = _isSheetExpanded ? 0.35 : 0.25; // Adjust size as needed
+    });
   }
 }

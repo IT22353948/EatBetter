@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:eat_better/pages/prabashwara/consts.dart';
 import 'package:eat_better/pages/prabashwara/Image_To_Text.dart';
@@ -11,8 +12,17 @@ import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:eat_better/splash_screen.dart';
 
 void main() async {
-  WidgetsFlutterBinding
-      .ensureInitialized(); // Ensures that all bindings are initialized
+ WidgetsFlutterBinding.ensureInitialized(); // Ensures that all bindings are initialized
+
+  // Initialize Firebase
+  await Firebase.initializeApp(
+    options: const FirebaseOptions(
+      apiKey: 'AIzaSyCUqqLij-gzu4A_qhz3lEnLMZi5x9L2sYU',
+      appId: '1:575093771566:android:dd600c74ae2b6198493ebf',
+      messagingSenderId: 'sendid',
+      projectId: 'eatbetter-45ca5',
+    ),
+  ); 
 
   Gemini.init(apiKey: GEMINI_API_KEY); //  initialization of Gemini
 

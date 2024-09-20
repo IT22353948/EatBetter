@@ -45,7 +45,7 @@ class HomePage extends StatelessWidget {
             ),
             _buildNavigationCard(
               context,
-              'Choose your preferences ',
+              ' preferences ',
               'Explore and discover new recipes',
               Icons.abc_sharp,
               UserPreferencePage(), // Replace with the actual Recipes screen

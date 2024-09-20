@@ -1,5 +1,6 @@
 import 'package:eat_better/authFile/auth.dart';
 import 'package:eat_better/authFile/login_register.dart';
+import 'package:eat_better/navigation_menu.dart';
 import 'package:eat_better/pages/home_page.dart';
 import 'package:flutter/material.dart';
 
@@ -19,7 +20,7 @@ class _WidgetTreeState extends State<WidgetTree>{
       stream: Auth().authStateChanges, 
       builder: (context , snapshot){
         if(snapshot.hasData){
-          return HomePage();
+          return NavigationMenu();
         }else{
           return  const LoginPage();
         }

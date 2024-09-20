@@ -1,7 +1,8 @@
+import 'package:eat_better/authFile/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_crud/pages/authFile/auth.dart';
+
 
 class UserPreferencePage extends StatefulWidget {
   UserPreferencePage({Key? key}) : super(key: key);

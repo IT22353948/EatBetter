@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_crud/models/preference_model.dart';
+import 'package:eat_better/models/preference_model.dart';
+
 
 const String TO_DO_COLLECTION_REF = 'preferences';
 

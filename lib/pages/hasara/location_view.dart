@@ -22,8 +22,17 @@ class _LocationViewState extends State<LocationView> {
   final Set<Marker> _markers = {}; // Markers for map
   static const String _locationText = "Find Your Restaurant";
 
-  //  Google Places API key
+
+  // Google Places API key
   final String _placesApiKey = "AIzaSyCIOwQeu3gc7WmTqb_aqnznqufJalwZ_s4";
+
+  // List to hold nearby restaurant data
+  List<dynamic> _restaurants = [];
+
+  // State variables for the bottom sheet
+  bool _isSheetExpanded = false;
+  double _currentSheetSize = 0.25; // Adjust initial size as needed
+
 
   @override
   void initState() {
@@ -35,30 +44,6 @@ class _LocationViewState extends State<LocationView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0), // Add padding for a circular icon
-          child: IconButton(
-            icon: Container(
-              width: 45, // Larger width for the circle
-              height: 45, // Larger height for the circle
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white, // Background color for the circle
-              ),
-              child: const Icon(
-                Icons.arrow_back, // Back arrow icon
-                color: Color(0xFFF86A2E), // Color for the arrow
-                size: 24, // Adjust the size of the arrow if needed
-              ),
-            ),
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const HomePage()), // Navigate to the home page
-              );
-            },
-          ),
-        ),
         title: const Text(
           _locationText,
           style: TextStyle(color: Colors.white),
@@ -66,73 +51,193 @@ class _LocationViewState extends State<LocationView> {
         backgroundColor: const Color(0xFFF86A2E),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color.fromARGB(126, 248, 100, 37), // Orange
-              Colors.white, // White
-            ],
-          ),
-        ),
-        child: Stack(
-          children: [
-            _currentP == null
-                ? const Center(child: Text("Loading...")) // Show a loading message while fetching the location
-                : Container(
-                    height: double.infinity,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10), // Optional: Rounded corners
-                    ),
-                    child: GoogleMap(
-                      onMapCreated: (GoogleMapController controller) {
-                        _mapController = controller;
-                        _moveCamera(_currentP!);
-                      },
-                      initialCameraPosition: CameraPosition(
-                        target: _currentP!,
-                        zoom: 13,
-                      ),
-                      markers: _markers, // Set all markers, including restaurants
-                    ),
+      body: Stack(
+        children: [
+          _currentP == null
+              ? const Center(child: Text("Loading...")) // Show loading message
+              : Container(
+                  height: double.infinity,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10), // Optional: Rounded corners
                   ),
-
-            // Search bar overlay at the top
-            Positioned(
-              top: 10,
-              left: 15,
-              right: 15,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 10,
-                      offset: Offset(0, 5),
+                  child: GoogleMap(
+                    onMapCreated: (GoogleMapController controller) {
+                      _mapController = controller;
+                      _moveCamera(_currentP!);
+                    },
+                    initialCameraPosition: CameraPosition(
+                      target: _currentP!,
+                      zoom: 13,
                     ),
-                  ],
+                    markers: _markers, // Set all markers, including restaurants
+                  ),
                 ),
-                child: TextField(
-                  controller: _searchController,
-                  decoration: const InputDecoration(
-                    hintText: "Search location...",
-                    border: InputBorder.none,
-                    suffixIcon: Icon(Icons.search),
+
+          // Search bar overlay at the top
+          Positioned(
+            top: 10,
+            left: 15,
+            right: 15,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 10,
+                    offset: Offset(0, 5),
                   ),
-                  onSubmitted: (value) {
-                    _searchPlace(value); // Search and mark location
-                  },
+                ],
+              ),
+              child: TextField(
+                controller: _searchController,
+                decoration: const InputDecoration(
+                  hintText: "Search location...",
+                  border: InputBorder.none,
+                  suffixIcon: Icon(Icons.search),
+                ),
+                onSubmitted: (value) {
+                  _searchPlace(value); // Search and mark location
+                },
+              ),
+            ),
+          ),
+
+          // Add the arrow button for toggling the restaurant view
+          Positioned(
+            bottom: 100, // Position above the bottom sheet
+            left: MediaQuery.of(context).size.width / 2 - 25,
+            child: GestureDetector(
+              onTap: _toggleBottomSheet,
+              child: Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: Colors.orange,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  _isSheetExpanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_up,
+                  color: Colors.white,
+                  size: 30,
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+
+          // DraggableScrollableSheet for restaurant details
+          DraggableScrollableSheet(
+            initialChildSize: _currentSheetSize,
+            minChildSize: 0.25,
+            maxChildSize: 0.35,
+            builder: (BuildContext context, ScrollController scrollController) {
+              return Container(
+                padding: const EdgeInsets.all(10),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 10,
+                      offset: Offset(0, -5),
+                    ),
+                  ],
+                ),
+                child: _restaurants.isEmpty
+                    ? const Center(child: Text('No restaurants found'))
+                    : ListView.builder(
+                        controller: scrollController,
+                        scrollDirection: Axis.horizontal,  // Set scroll direction to horizontal
+                        itemCount: _restaurants.length,
+                        itemBuilder: (context, index) {
+                          final restaurant = _restaurants[index];
+                          String photoReference = restaurant['photos'] != null
+                              ? restaurant['photos'][0]['photo_reference']
+                              : ''; // Get photo reference if available
+
+                          // Restaurant photo URL using photo reference
+                          String photoUrl = photoReference.isNotEmpty
+                              ? 'https://maps.googleapis.com/maps/api/place/photo'
+                                '?maxwidth=400'
+                                '&photoreference=$photoReference'
+                                '&key=$_placesApiKey'
+                              : 'https://via.placeholder.com/400'; // Placeholder image if no photo available
+
+                          return Card(
+                            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20), // Rounded corners for the card
+                            ),
+                            color: const Color(0xFFF86A2E).withOpacity(0.85), // Orange mix background color
+                            child: SizedBox(
+                              width: 320,// Card width
+                              height: 150, // Card height
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Restaurant image
+                                  ClipRRect(
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(20),
+                                      topRight: Radius.circular(20),
+                                    ),
+                                    child: Image.network(
+                                      photoUrl,
+                                      height: 100,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover, // Cover the image space
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(10),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          restaurant['name'] ?? 'Unknown Name',
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white, // White text on orange background
+                                          ),
+                                        ),
+                                        const SizedBox(height: 5),
+                                        Text(
+                                          'Rating: ${restaurant['rating'] ?? 'No rating'}',
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            color: Color.fromARGB(179, 251, 226, 226),
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Text(
+                                          restaurant['vicinity'] ?? 'No address provided',
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.white54,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
@@ -218,9 +323,6 @@ class _LocationViewState extends State<LocationView> {
           );
         });
         _moveCamera(newPosition); // Move the camera to the searched location
-
-        // After moving to the searched location, fetch nearby restaurants for that area
-        await _fetchNearbyRestaurants();
       }
     } catch (e) {
       print("Error occurred while searching for the location: $e");
@@ -229,11 +331,10 @@ class _LocationViewState extends State<LocationView> {
 
   // Fetch nearby restaurants using Google Places API
   Future<void> _fetchNearbyRestaurants() async {
-    if (_currentP == null && _searchedLocation == null) return;
+    if (_currentP == null) return;
 
-    LatLng searchLocation = _searchedLocation ?? _currentP!; // Use searched location if available, otherwise current location
     final String url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
-        '?location=${searchLocation.latitude},${searchLocation.longitude}'
+        '?location=${_currentP!.latitude},${_currentP!.longitude}'
         '&radius=5000' // 5 km radius
         '&type=restaurant' // Only fetch restaurants
         '&key=$_placesApiKey';
@@ -242,53 +343,40 @@ class _LocationViewState extends State<LocationView> {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        
-        // Debugging: Print out the status and the result count
-        print('Status: ${data["status"]}');
-        print('Results count: ${data["results"].length}');
 
-        if (data['results'].isNotEmpty) {
+        if (data['status'] == 'OK') {
+          List<dynamic> results = data['results'];
+          Set<Marker> restaurantMarkers = results.map((restaurant) {
+            final LatLng position = LatLng(
+              restaurant['geometry']['location']['lat'],
+              restaurant['geometry']['location']['lng'],
+            );
+            return Marker(
+              markerId: MarkerId(restaurant['place_id']),
+              position: position,
+              icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+              infoWindow: InfoWindow(title: restaurant['name']),
+            );
+          }).toSet();
+
           setState(() {
-            // Clear any existing restaurant markers before adding new ones
-            _markers.removeWhere((marker) => marker.markerId.value.contains("restaurant"));
-
-            // Add a marker for each restaurant
-            for (var result in data['results']) {
-              final placeLocation = LatLng(
-                result['geometry']['location']['lat'],
-                result['geometry']['location']['lng'],
-              );
-              
-              _markers.add(
-                Marker(
-                  markerId: MarkerId("restaurant_${result['place_id']}"),
-                  position: placeLocation,
-                  infoWindow: InfoWindow(
-                    title: result['name'],
-                    snippet: result['vicinity'],
-                  ),
-                  icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen), // Customize marker color for restaurants
-                ),
-              );
-            }
+            _restaurants = results; // Update the list of restaurants
+            _markers.addAll(restaurantMarkers);
           });
-        } else {
-          // Handle case when no results are found
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('No restaurants found near the location.')),
-          );
         }
       } else {
-        print('Failed to fetch restaurants. Status code: ${response.statusCode}');
+        print("Failed to fetch nearby restaurants: ${response.body}");
       }
     } catch (e) {
-      print('Error fetching restaurants: $e');
+      print("Error fetching nearby restaurants: $e");
     }
   }
 
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
+  // Toggle the bottom sheet visibility
+  void _toggleBottomSheet() {
+    setState(() {
+      _isSheetExpanded = !_isSheetExpanded;
+      _currentSheetSize = _isSheetExpanded ? 0.35 : 0.25; // Adjust size as needed
+    });
   }
 }

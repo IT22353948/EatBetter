@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:eat_better/pages/home.dart';
+import 'package:eat_better/pages/home_page.dart';
 import 'package:eat_better/pages/food_analysis.dart';
 import 'package:eat_better/pages/recipe_search.dart';
 import 'package:eat_better/pages/hasara/location_view.dart';
@@ -61,11 +61,9 @@ class _NavigationMenuState extends State<NavigationMenu> {
             onTap: (index) {
               setState(() {
                 _currentIndex = index;
-                _pageController.animateToPage(
-                 // Switch the PageView,
+                _pageController.jumpToPage(
+                  // Switch the PageView
                   index,
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
                 );
               });
             },

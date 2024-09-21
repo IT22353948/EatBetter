@@ -1,4 +1,7 @@
-import 'dart:ffi';
+import 'package:eat_better/authFile/auth.dart';
+import 'package:eat_better/authFile/login_register.dart';
+import 'package:eat_better/authFile/widget_tree.dart';
+import 'package:eat_better/pages/prabashwara/Preferences/preference_page.dart';
 import 'package:flutter/material.dart';
 import 'prabashwara/Image_To_Text.dart';
 import 'food_analysis.dart';
@@ -6,13 +9,45 @@ import 'food_analysis.dart';
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
+  // Sign out method
+  Future<void> signOut(BuildContext context) async {
+    await Auth().signOut();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const WidgetTree()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final user = Auth().CurrentUser;
+    String trimmedEmail = (user?.email ?? "User").split('@').first; // Trimmed email
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: const Text('EatBetter'),
         backgroundColor: const Color(0xFFF86A2E), // AppBar color
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: Row(
+              children: [
+                Text(
+                  trimmedEmail,
+                  style: const TextStyle(fontSize: 16),
+                ),
+                const SizedBox(width: 10),
+                IconButton(
+                  icon: const Icon(Icons.logout),
+                  onPressed: () {
+                    signOut(context); // Sign out and navigate to login
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -26,7 +61,6 @@ class HomePage extends StatelessWidget {
           ),
         ),
 
-        // color: const Color(0xFFF5F5F5), // Background color for the body
         padding: const EdgeInsets.all(16.0),
         child: GridView.count(
           crossAxisCount: 2,
@@ -44,10 +78,10 @@ class HomePage extends StatelessWidget {
             ),
             _buildNavigationCard(
               context,
-              'Recipes',
+              'Preferences',
               'Explore and discover new recipes',
-              Icons.restaurant_menu,
-              Container(), // Replace with the actual Recipes screen
+              Icons.abc_sharp,
+              UserPreferencePage(), // Replace with the actual Preferences screen
               Colors.deepOrange, // Icon color
               Color(0xFF3498db), // Card border color
             ),
@@ -80,8 +114,8 @@ class HomePage extends StatelessWidget {
             ),
             _buildNavigationCard(
               context,
-              'sample card',
-              'lorem ipsam',
+              'Sample Card',
+              'Lorem ipsum',
               Icons.access_time_sharp,
               FoodAnalysis(), // Replace with the actual Food Analysis screen
               Colors.blue, // Icon color

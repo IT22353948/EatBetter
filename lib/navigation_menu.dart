@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:eat_better/pages/home.dart';
+import 'package:eat_better/pages/home_page.dart';
 import 'package:eat_better/pages/food_analysis.dart';
 import 'package:eat_better/pages/recipe_search.dart';
 import 'package:eat_better/pages/hasara/location_view.dart';
@@ -61,8 +61,13 @@ class _NavigationMenuState extends State<NavigationMenu> {
             onTap: (index) {
               setState(() {
                 _currentIndex = index;
+<<<<<<<<< Temporary merge branch 1
+                _pageController.jumpToPage(
+                  // Switch the PageView
+=========
                 _pageController.animateToPage(
                  // Switch the PageView,
+>>>>>>>>> Temporary merge branch 2
                   index,
                   duration: const Duration(milliseconds: 300),
                   curve: Curves.easeInOut,

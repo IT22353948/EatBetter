@@ -29,12 +29,11 @@ class _NavigationMenuState extends State<NavigationMenu> {
     if (_currentIndex != 0) {
       setState(() {
         _currentIndex = 0;
-        _pageController
-            .jumpToPage(0); // Update PageView when back button is pressed
+        _pageController.jumpToPage(0); // Switch to the first page (Menu)
       });
-      return false; // Prevent default back button behavior
+      return false; // Prevent the default back button action
     } else {
-      return true; // Allow the app to exit if already on Menu
+      return true; // Allow the app to exit if already on the first page
     }
   }
 
@@ -44,11 +43,10 @@ class _NavigationMenuState extends State<NavigationMenu> {
       onWillPop: _onPop,
       child: Scaffold(
         body: PageView(
-          controller: _pageController, // Add the PageController
+          controller: _pageController, // Use the PageController
           onPageChanged: (index) {
             setState(() {
-              _currentIndex =
-                  index; // Update the bottom navigation bar when the page changes
+              _currentIndex = index; // Update the BottomNavigationBar index
             });
           },
           children: _pages,
@@ -61,20 +59,12 @@ class _NavigationMenuState extends State<NavigationMenu> {
             onTap: (index) {
               setState(() {
                 _currentIndex = index;
-<<<<<<<<< Temporary merge branch 1
                 _pageController.jumpToPage(
-                  // Switch the PageView
-=========
-                _pageController.animateToPage(
-                 // Switch the PageView,
->>>>>>>>> Temporary merge branch 2
-                  index,
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
+                  index, // Instantly switch to the tapped page
                 );
               });
             },
-            selectedItemColor: Color.fromARGB(248, 246, 106, 46),
+            selectedItemColor: const Color.fromARGB(248, 246, 106, 46),
             unselectedItemColor: const Color.fromARGB(255, 0, 0, 0),
             showUnselectedLabels: true,
             iconSize: 30,

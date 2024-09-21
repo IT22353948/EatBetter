@@ -4,10 +4,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as location_package;
 import 'package:geocoding/geocoding.dart'; // Import for geocoding
 import 'package:http/http.dart' as http; // Import for making API requests
-<<<<<<<<< Temporary merge branch 1
-import '../home.dart'; // Import your Home page
-=========
->>>>>>>>> Temporary merge branch 2
+import '../home_page.dart'; // Import your Home page
+
 
 class LocationView extends StatefulWidget {
   const LocationView({super.key});
@@ -25,10 +23,7 @@ class _LocationViewState extends State<LocationView> {
   final Set<Marker> _markers = {}; // Markers for map
   static const String _locationText = "Find Your Restaurant";
 
-<<<<<<<<< Temporary merge branch 1
-  //  Google Places API key
-  final String _placesApiKey = "AIzaSyCIOwQeu3gc7WmTqb_aqnznqufJalwZ_s4";
-=========
+
   // Google Places API key
   final String _placesApiKey = "AIzaSyCIOwQeu3gc7WmTqb_aqnznqufJalwZ_s4";
 
@@ -38,7 +33,7 @@ class _LocationViewState extends State<LocationView> {
   // State variables for the bottom sheet
   bool _isSheetExpanded = false;
   double _currentSheetSize = 0.25; // Adjust initial size as needed
->>>>>>>>> Temporary merge branch 2
+
 
   @override
   void initState() {

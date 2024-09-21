@@ -37,7 +37,7 @@ class _SplashScreenState extends State<SplashScreen>
       _showNoInternetDialog();
     } else {
       Future.delayed(const Duration(seconds: 3), () {
-        Navigator.pushReplacementNamed(context, '/navigation');
+        Navigator.pushReplacementNamed(context, '/widget_tree');
       });
     }
   }

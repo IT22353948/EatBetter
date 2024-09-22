@@ -1,7 +1,10 @@
+import 'dart:convert'; // For decoding the HTTP response
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart' as location_package; // Alias location package
-import 'package:geocoding/geocoding.dart'; // Import geocoding package for converting address to coordinates
+import 'package:location/location.dart' as location_package;
+import 'package:geocoding/geocoding.dart'; // Import for geocoding
+import 'package:http/http.dart' as http; // Import for making API requests
+import '../home_page.dart'; // Import your Home page
 
 class LocationView extends StatefulWidget {
   const LocationView({super.key});
@@ -11,13 +14,25 @@ class LocationView extends StatefulWidget {
 }
 
 class _LocationViewState extends State<LocationView> {
-  // Use the alias for the location package
-  location_package.Location _locationController = location_package.Location();
-  LatLng? _currentP;
-  LatLng? _searchedLocation; // For storing the searched location
-  GoogleMapController? _mapController; // Map controller
-  TextEditingController _searchController = TextEditingController(); // Controller for search input
-  static const String _locationText = "Find Your Restaurant"; // Static text for AppBar
+  final location_package.Location _locationController = location_package.Location();
+  LatLng? _currentP; // Current location
+  LatLng? _searchedLocation; // Searched location
+  GoogleMapController? _mapController;
+  final TextEditingController _searchController = TextEditingController(); // Controller for search input
+  final Set<Marker> _markers = {}; // Markers for map
+  static const String _locationText = "Find Your Restaurant";
+
+
+  // Google Places API key
+  final String _placesApiKey = "AIzaSyCIOwQeu3gc7WmTqb_aqnznqufJalwZ_s4";
+
+  // List to hold nearby restaurant data
+  List<dynamic> _restaurants = [];
+
+  // State variables for the bottom sheet
+  bool _isSheetExpanded = false;
+  double _currentSheetSize = 0.25; // Adjust initial size as needed
+
 
   @override
   void initState() {
@@ -29,99 +44,200 @@ class _LocationViewState extends State<LocationView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text( // Make it a constant Text widget to prevent updates
+        title: const Text(
           _locationText,
-          style: TextStyle(color: Colors.white), // Set text color to white
+          style: TextStyle(color: Colors.white),
         ),
         backgroundColor: const Color(0xFFF86A2E),
-        iconTheme: const IconThemeData(color: Colors.white), // Optional: Set icon color to white
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: Container(
-        // Apply gradient background
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color.fromARGB(126, 248, 100, 37), // Orange bar
-              Colors.white, // White
-            ],
-          ),
-        ),
-        child: Stack(
-          children: [
-            _currentP == null
-                ? const Center(child: Text("Loading...")) // Show a loading message until the current location is obtained
-                : Container(
-                    height: double.infinity, // Set the height for the map container
-                    width: double.infinity, // Make map fill the width
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10), // Optional rounded corners
-                    ),
-                    child: GoogleMap(
-                      onMapCreated: (GoogleMapController controller) {
-                        _mapController = controller;
-                        // Move the camera to the current location when the map is created
-                        _moveCamera(_currentP!);
-                      },
-                      initialCameraPosition: CameraPosition(
-                        target: _currentP!, // Use the current location as the initial position
-                        zoom: 13,
-                      ),
-                      markers: {
-                        Marker(
-                          markerId: const MarkerId("_currentLocation"),
-                          icon: BitmapDescriptor.defaultMarkerWithHue(
-                            BitmapDescriptor.hueBlue,
-                          ),
-                          position: _currentP!,
-                        ),
-                        if (_searchedLocation != null) // Add marker for searched location
-                          Marker(
-                            markerId: const MarkerId("_searchedLocation"),
-                            icon: BitmapDescriptor.defaultMarkerWithHue(
-                              BitmapDescriptor.hueRed,
-                            ),
-                            position: _searchedLocation!,
-                          ),
-                      },
-                    ),
+      body: Stack(
+        children: [
+          _currentP == null
+              ? const Center(child: Text("Loading...")) // Show loading message
+              : Container(
+                  height: double.infinity,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10), // Optional: Rounded corners
                   ),
+                  child: GoogleMap(
+                    onMapCreated: (GoogleMapController controller) {
+                      _mapController = controller;
+                      _moveCamera(_currentP!);
+                    },
+                    initialCameraPosition: CameraPosition(
+                      target: _currentP!,
+                      zoom: 13,
+                    ),
+                    markers: _markers, // Set all markers, including restaurants
+                  ),
+                ),
 
-            // Search bar overlay
-            Positioned(
-              top: 10,
-              left: 15,
-              right: 15,
+          // Search bar overlay at the top
+          Positioned(
+            top: 10,
+            left: 15,
+            right: 15,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 10,
+                    offset: Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: TextField(
+                controller: _searchController,
+                decoration: const InputDecoration(
+                  hintText: "Search location...",
+                  border: InputBorder.none,
+                  suffixIcon: Icon(Icons.search),
+                ),
+                onSubmitted: (value) {
+                  _searchPlace(value); // Search and mark location
+                },
+              ),
+            ),
+          ),
+
+          // Add the arrow button for toggling the restaurant view
+          Positioned(
+            bottom: 100, // Position above the bottom sheet
+            left: MediaQuery.of(context).size.width / 2 - 25,
+            child: GestureDetector(
+              onTap: _toggleBottomSheet,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
+                width: 50,
+                height: 50,
                 decoration: BoxDecoration(
+                  color: Colors.orange,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  _isSheetExpanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_up,
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
+                  size: 30,
+                ),
+              ),
+            ),
+          ),
+
+          // DraggableScrollableSheet for restaurant details
+          DraggableScrollableSheet(
+            initialChildSize: _currentSheetSize,
+            minChildSize: 0.25,
+            maxChildSize: 0.35,
+            builder: (BuildContext context, ScrollController scrollController) {
+              return Container(
+                padding: const EdgeInsets.all(10),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black26,
                       blurRadius: 10,
-                      offset: Offset(0, 5),
+                      offset: Offset(0, -5),
                     ),
                   ],
                 ),
-                child: TextField(
-                  controller: _searchController,
-                  decoration: const InputDecoration(
-                    hintText: "Search location...",
-                    border: InputBorder.none,
-                    suffixIcon: Icon(Icons.search),
-                  ),
-                  onSubmitted: (value) {
-                    // Perform search on submit
-                    _searchPlace(value);
-                  },
-                ),
-              ),
-            ),
-          ],
-        ),
+                child: _restaurants.isEmpty
+                    ? const Center(child: Text('No restaurants found'))
+                    : ListView.builder(
+                        controller: scrollController,
+                        scrollDirection: Axis.horizontal,  // Set scroll direction to horizontal
+                        itemCount: _restaurants.length,
+                        itemBuilder: (context, index) {
+                          final restaurant = _restaurants[index];
+                          String photoReference = restaurant['photos'] != null
+                              ? restaurant['photos'][0]['photo_reference']
+                              : ''; // Get photo reference if available
+
+                          // Restaurant photo URL using photo reference
+                          String photoUrl = photoReference.isNotEmpty
+                              ? 'https://maps.googleapis.com/maps/api/place/photo'
+                                '?maxwidth=400'
+                                '&photoreference=$photoReference'
+                                '&key=$_placesApiKey'
+                              : 'https://via.placeholder.com/400'; // Placeholder image if no photo available
+
+                          return Card(
+                            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20), // Rounded corners for the card
+                            ),
+                            color: const Color(0xFFF86A2E).withOpacity(0.85), // Orange mix background color
+                            child: SizedBox(
+                              width: 320,// Card width
+                              height: 150, // Card height
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Restaurant image
+                                  ClipRRect(
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(20),
+                                      topRight: Radius.circular(20),
+                                    ),
+                                    child: Image.network(
+                                      photoUrl,
+                                      height: 100,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover, // Cover the image space
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(10),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          restaurant['name'] ?? 'Unknown Name',
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white, // White text on orange background
+                                          ),
+                                        ),
+                                        const SizedBox(height: 5),
+                                        Text(
+                                          'Rating: ${restaurant['rating'] ?? 'No rating'}',
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            color: Color.fromARGB(179, 251, 226, 226),
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Text(
+                                          restaurant['vicinity'] ?? 'No address provided',
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.white54,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
@@ -131,7 +247,6 @@ class _LocationViewState extends State<LocationView> {
     bool _serviceEnabled;
     location_package.PermissionStatus _permissionGranted;
 
-    // Check if service is enabled
     _serviceEnabled = await _locationController.serviceEnabled();
     if (!_serviceEnabled) {
       _serviceEnabled = await _locationController.requestService();
@@ -140,7 +255,6 @@ class _LocationViewState extends State<LocationView> {
       }
     }
 
-    // Check for permission
     _permissionGranted = await _locationController.hasPermission();
     if (_permissionGranted == location_package.PermissionStatus.denied) {
       _permissionGranted = await _locationController.requestPermission();
@@ -149,17 +263,27 @@ class _LocationViewState extends State<LocationView> {
       }
     }
 
-    // Listen to location changes
+    // Listen for location changes
     _locationController.onLocationChanged.listen((location_package.LocationData currentLocation) {
       if (currentLocation.latitude != null && currentLocation.longitude != null) {
         setState(() {
-          // Update the current location without changing the AppBar text
           _currentP = LatLng(currentLocation.latitude!, currentLocation.longitude!);
-          print(_currentP); // Log the current coordinates
+
+          // Add a marker for the current location
+          _markers.add(
+            Marker(
+              markerId: const MarkerId("current_location"),  // Unique ID for the current location marker
+              icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue), // Customize color to blue
+              position: _currentP!,  // Current location coordinates
+              infoWindow: const InfoWindow(title: "Your Location"),  // Optional: Title for the marker
+            ),
+          );
+
           // Move the camera to the current location
-          if (_mapController != null) {
-            _moveCamera(_currentP!);
-          }
+          _moveCamera(_currentP!);
+
+          // Fetch nearby restaurants after current location is set
+          _fetchNearbyRestaurants();
         });
       }
     });
@@ -177,20 +301,82 @@ class _LocationViewState extends State<LocationView> {
     }
   }
 
-  // Handle location search and move the camera to the searched location
+  // Search for a location and update the marker
   Future<void> _searchPlace(String query) async {
     try {
-      List<Location> locations = await locationFromAddress(query); // Use geocoding to get coordinates
+      List<Location> locations = await locationFromAddress(query); // Geocode the search query
       if (locations.isNotEmpty) {
         final newPosition = LatLng(locations.first.latitude, locations.first.longitude);
         setState(() {
-          _searchedLocation = newPosition; // Store the searched location
+          _searchedLocation = newPosition; // Set the searched location
+          
+          // Ensure unique MarkerId for each searched location
+          final searchMarkerId = MarkerId("searched_location_${DateTime.now().millisecondsSinceEpoch}");
+          
+          _markers.add(
+            Marker(
+              markerId: searchMarkerId,
+              icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+              position: _searchedLocation!,
+              infoWindow: InfoWindow(title: "Searched Location"), // Optional: Add an info window for the marker
+            ),
+          );
         });
-        _moveCamera(newPosition); // Move the map camera to the searched location
-        print("Searched location: $_searchedLocation");
+        _moveCamera(newPosition); // Move the camera to the searched location
       }
     } catch (e) {
       print("Error occurred while searching for the location: $e");
     }
+  }
+
+  // Fetch nearby restaurants using Google Places API
+  Future<void> _fetchNearbyRestaurants() async {
+    if (_currentP == null) return;
+
+    final String url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
+        '?location=${_currentP!.latitude},${_currentP!.longitude}'
+        '&radius=5000' // 5 km radius
+        '&type=restaurant' // Only fetch restaurants
+        '&key=$_placesApiKey';
+
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        if (data['status'] == 'OK') {
+          List<dynamic> results = data['results'];
+          Set<Marker> restaurantMarkers = results.map((restaurant) {
+            final LatLng position = LatLng(
+              restaurant['geometry']['location']['lat'],
+              restaurant['geometry']['location']['lng'],
+            );
+            return Marker(
+              markerId: MarkerId(restaurant['place_id']),
+              position: position,
+              icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+              infoWindow: InfoWindow(title: restaurant['name']),
+            );
+          }).toSet();
+
+          setState(() {
+            _restaurants = results; // Update the list of restaurants
+            _markers.addAll(restaurantMarkers);
+          });
+        }
+      } else {
+        print("Failed to fetch nearby restaurants: ${response.body}");
+      }
+    } catch (e) {
+      print("Error fetching nearby restaurants: $e");
+    }
+  }
+
+  // Toggle the bottom sheet visibility
+  void _toggleBottomSheet() {
+    setState(() {
+      _isSheetExpanded = !_isSheetExpanded;
+      _currentSheetSize = _isSheetExpanded ? 0.35 : 0.25; // Adjust size as needed
+    });
   }
 }

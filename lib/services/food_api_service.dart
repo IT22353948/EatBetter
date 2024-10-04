@@ -5,7 +5,7 @@ import 'dart:convert';
 class FoodService {
   // API key for Spoonacular API, rapid api. for limit the calls i have add an extra number to the end of the key
   //to get this fetch function to work. remove the last integer from the api key
-  static String apiKey = '26e308d91dmsh73617d5e1036f24p15c7c4jsne600d99e48596';
+  static String apiKey = '26e308d91dmsh73617d5e1036f24p15c7c4jsne600d99e4859';
 
   // Cache to store fetched recipes by name
   static Map<String, List<Map<String, dynamic>>> _cache = {};
@@ -34,17 +34,22 @@ class FoodService {
   //see the example in the HomeTabBarView class in the common_tab.dart file.
   static Future<List<Map<String, dynamic>>> getRecipeForCommons(
       String name) async {
-    // Check if the data for the recipe name is already cached
-    if (_cache.containsKey(name)) {
-      // Return cached data
-      return _cache[name]!;
+    // Convert the name to lowercase to standardize cache keys.
+    String formattedName = name.toLowerCase();
+
+    // Check if the data for the recipe name is already cached.
+    if (_cache.containsKey(formattedName)) {
+      print('Returning cached data for $name');
+      // Return cached data if available.
+      return _cache[formattedName]!;
     }
 
-    // If data is not cached, proceed with the API call
+    // If data is not cached, proceed with the API call.
     String apiEndpointUrl =
-        'https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/complexSearch?query=$name&number=3';
+        'https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/complexSearch?query=$name&number=1';
     List<Map<String, dynamic>> recipes = [];
 
+    // Make the API request.
     final response = await http.get(
       Uri.parse(apiEndpointUrl),
       headers: {
@@ -54,26 +59,27 @@ class FoodService {
       },
     );
 
+    // Check if the response is successful.
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
+
+      // Parse the results and store them in the recipes list.
       if (data['results'] != null) {
         for (var result in data['results']) {
           recipes.add(result);
         }
       }
 
-      // Store the fetched data in the cache for future use
-      _cache[name] = recipes;
+      // Store the fetched data in the cache for future use.
+      _cache[formattedName] = recipes;
 
-      //console log recipe
-      print('$recipes');
-      // Return the fetched data
+      print('Fetched data from API for $name and cached it.');
+      // Return the fetched data.
       return recipes;
     }
 
-    //console log recipe
-    print('$recipes');
-    // Return an empty list if the API call fails
+    // If the API call fails, return an empty list.
+    print('Failed to fetch data from API for $name.');
     return recipes;
   }
 }

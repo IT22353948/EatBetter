@@ -4,7 +4,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as location_package;
 import 'package:geocoding/geocoding.dart'; // Import for geocoding
 import 'package:http/http.dart' as http; // Import for making API requests
-import '../home_page.dart'; // Import your Home page
+import '../home_page.dart'; 
+import 'package:custom_rating_bar/custom_rating_bar.dart';  //ratings
 
 
 class LocationView extends StatefulWidget {
@@ -32,7 +33,7 @@ class _LocationViewState extends State<LocationView> {
 
   // State variables for the bottom sheet
   bool _isSheetExpanded = false;
-  double _currentSheetSize = 0.25; // Adjust initial size as needed
+  double _currentSheetSize = 0.25; 
 
 
   @override
@@ -116,7 +117,7 @@ class _LocationViewState extends State<LocationView> {
               child: Container(
                 width: 50,
                 height: 50,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.orange,
                   shape: BoxShape.circle,
                 ),
@@ -176,7 +177,7 @@ class _LocationViewState extends State<LocationView> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20), // Rounded corners for the card
                             ),
-                            color: const Color(0xFFF86A2E).withOpacity(0.85), // Orange mix background color
+                            color: Colors.white,
                             child: SizedBox(
                               width: 320,// Card width
                               height: 150, // Card height
@@ -206,17 +207,33 @@ class _LocationViewState extends State<LocationView> {
                                           style: const TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold,
-                                            color: Colors.white, // White text on orange background
+                                            color: Colors.black, // White text on orange background
                                           ),
                                         ),
                                         const SizedBox(height: 5),
-                                        Text(
-                                          'Rating: ${restaurant['rating'] ?? 'No rating'}',
-                                          style: const TextStyle(
-                                            fontSize: 14,
-                                            color: Color.fromARGB(179, 251, 226, 226),
-                                            fontWeight: FontWeight.bold,
-                                          ),
+
+                                        //Display star ratngs using CustomRatingbar
+                                        Row(
+                                            children: [
+                                              RatingBar(
+                                                filledIcon: Icons.star, 
+                                                emptyIcon: Icons.star_border, 
+                                                onRatingChanged: (rating) {
+                                                     // Update the rating state when the user changes it
+                                                      setState(() {
+                                                      restaurant['rating'] = rating;
+                                                     });
+                                                    },
+                                                initialRating: restaurant['rating']?.toDouble() ?? 0.0, 
+                                                maxRating:5, 
+                                                halfFilledIcon: Icons.star_half, 
+                                              ),
+                                              const SizedBox(width:10),
+                                              Text(
+                                              '(${restaurant['user_ratings_total'] ?? '0'})', // Display the number of ratings
+                                              style: const TextStyle(color: Colors.black),
+                                            ),
+                                            ],
                                         ),
                                         const SizedBox(height: 10),
                                         Text(
@@ -319,7 +336,7 @@ class _LocationViewState extends State<LocationView> {
               markerId: searchMarkerId,
               icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
               position: _searchedLocation!,
-              infoWindow: InfoWindow(title: "Searched Location"), // Optional: Add an info window for the marker
+              infoWindow: const InfoWindow(title: "Searched Location"), 
             ),
           );
         });
@@ -377,7 +394,7 @@ class _LocationViewState extends State<LocationView> {
   void _toggleBottomSheet() {
     setState(() {
       _isSheetExpanded = !_isSheetExpanded;
-      _currentSheetSize = _isSheetExpanded ? 0.35 : 0.25; // Adjust size as needed
+      _currentSheetSize = _isSheetExpanded ? 0.35 : 0.25; 
     });
   }
 }

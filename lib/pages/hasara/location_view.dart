@@ -387,8 +387,8 @@ class _LocationViewState extends State<LocationView> {
               position: position,
               icon: BitmapDescriptor.defaultMarkerWithHue(
                 _selectedRestaurantId == placeId
-                 ? BitmapDescriptor.hueOrange // Use a different color for the selected restaurant
-                : BitmapDescriptor.hueGreen, // Default color for non-selected restaurants
+                 ? BitmapDescriptor.hueGreen// Use a different color for the selected restaurant
+                : BitmapDescriptor.hueOrange, // Default color for non-selected restaurants
               ),
               infoWindow: InfoWindow(title: restaurant['name']),
             );

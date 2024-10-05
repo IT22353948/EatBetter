@@ -2,9 +2,9 @@ import 'dart:convert'; // For decoding the HTTP response
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as location_package;
-import 'package:geocoding/geocoding.dart'; // Import for geocoding
+import 'package:geocoding/geocoding.dart'; 
 import 'package:http/http.dart' as http; // Import for making API requests
-import '../home_page.dart'; 
+// import '../home_page.dart'; 
 import 'package:custom_rating_bar/custom_rating_bar.dart';  //ratings
 
 
@@ -24,6 +24,8 @@ class _LocationViewState extends State<LocationView> {
   final Set<Marker> _markers = {}; // Markers for map
   static const String _locationText = "Find Your Restaurant";
 
+ //Track the selected restaurant's palce id
+ String? _selectedRestaurantId;
 
   // Google Places API key
   final String _placesApiKey = "AIzaSyCIOwQeu3gc7WmTqb_aqnznqufJalwZ_s4";
@@ -160,6 +162,7 @@ class _LocationViewState extends State<LocationView> {
                         itemCount: _restaurants.length,
                         itemBuilder: (context, index) {
                           final restaurant = _restaurants[index];
+                          String placeId = restaurant['place_id'];
                           String photoReference = restaurant['photos'] != null
                               ? restaurant['photos'][0]['photo_reference']
                               : ''; // Get photo reference if available
@@ -172,7 +175,14 @@ class _LocationViewState extends State<LocationView> {
                                 '&key=$_placesApiKey'
                               : 'https://via.placeholder.com/400'; // Placeholder image if no photo available
 
-                          return Card(
+                          return GestureDetector(
+                             onTap: () {
+                            setState(() {
+                                 _selectedRestaurantId = placeId;  // Update the selected restaurant's place_id
+                             });
+                           _fetchNearbyRestaurants();  // Rebuild markers to reflect the color change
+                             },
+                          child: Card(
                             margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20), // Rounded corners for the card
@@ -249,6 +259,7 @@ class _LocationViewState extends State<LocationView> {
                                 ],
                               ),
                             ),
+                          ),
                           );
                         },
                       ),
@@ -313,7 +324,7 @@ class _LocationViewState extends State<LocationView> {
       await _mapController!.animateCamera(CameraUpdate.newCameraPosition(
         CameraPosition(
           target: position,
-          zoom: 14,
+          zoom: 13,
         ),
       ));
     }
@@ -369,16 +380,23 @@ class _LocationViewState extends State<LocationView> {
               restaurant['geometry']['location']['lat'],
               restaurant['geometry']['location']['lng'],
             );
+            final String placeId = restaurant['place_id'];
+
             return Marker(
-              markerId: MarkerId(restaurant['place_id']),
+              markerId: MarkerId(placeId),
               position: position,
-              icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+              icon: BitmapDescriptor.defaultMarkerWithHue(
+                _selectedRestaurantId == placeId
+                 ? BitmapDescriptor.hueOrange // Use a different color for the selected restaurant
+                : BitmapDescriptor.hueGreen, // Default color for non-selected restaurants
+              ),
               infoWindow: InfoWindow(title: restaurant['name']),
             );
           }).toSet();
 
           setState(() {
             _restaurants = results; // Update the list of restaurants
+            _markers.clear();
             _markers.addAll(restaurantMarkers);
           });
         }

@@ -4,9 +4,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as location_package;
 import 'package:geocoding/geocoding.dart'; 
 import 'package:http/http.dart' as http; // Import for making API requests
-// import '../home_page.dart'; 
 import 'package:custom_rating_bar/custom_rating_bar.dart';  //ratings
-
+import 'package:geolocator/geolocator.dart';
 
 class LocationView extends StatefulWidget {
   const LocationView({super.key});
@@ -59,9 +58,12 @@ class _LocationViewState extends State<LocationView> {
         children: [
           _currentP == null
               ? const Center(child: Text("Loading...")) // Show loading message
-              : Container(
-                  height: double.infinity,
-                  width: double.infinity,
+               :AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  height: _isSheetExpanded
+                     ? MediaQuery.of(context).size.height *0.25 // Reduce the map height when the bottom sheet is expanded
+                     : MediaQuery.of(context).size.height,
+                     width: double.infinity,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10), // Optional: Rounded corners
                   ),
@@ -136,7 +138,7 @@ class _LocationViewState extends State<LocationView> {
           DraggableScrollableSheet(
             initialChildSize: _currentSheetSize,
             minChildSize: 0.25,
-            maxChildSize: 0.35,
+            maxChildSize: 0.5,
             builder: (BuildContext context, ScrollController scrollController) {
               return Container(
                 padding: const EdgeInsets.all(10),
@@ -174,7 +176,7 @@ class _LocationViewState extends State<LocationView> {
                                 '&photoreference=$photoReference'
                                 '&key=$_placesApiKey'
                               : 'https://via.placeholder.com/400'; // Placeholder image if no photo available
-
+                            
                           return GestureDetector(
                              onTap: () {
                             setState(() {
@@ -245,6 +247,14 @@ class _LocationViewState extends State<LocationView> {
                                             ),
                                             ],
                                         ),
+                                        const SizedBox(height: 5),
+                                          Text(
+                                            'Distance: ${restaurant['distance'].toStringAsFixed(2)} km', // Display the distance
+                                            style: const TextStyle(
+                                              fontSize: 15,
+                                              color: Color.fromARGB(137, 10, 9, 9),
+                                            ),
+                                          ),
                                         const SizedBox(height: 10),
                                         Text(
                                           restaurant['vicinity'] ?? 'No address provided',
@@ -381,17 +391,32 @@ class _LocationViewState extends State<LocationView> {
               restaurant['geometry']['location']['lng'],
             );
             final String placeId = restaurant['place_id'];
+              
+              // Calculate the distance to the restaurant
+            double distanceInMeters = Geolocator.distanceBetween(
+              _currentP!.latitude,
+              _currentP!.longitude,
+              position.latitude,
+            position.longitude,
+          );
+          double distanceInKm = distanceInMeters / 1000; // Convert to kilometers
+          
+          // Store the distance in the restaurant data
+          restaurant['distance'] = distanceInKm;
 
             return Marker(
               markerId: MarkerId(placeId),
               position: position,
               icon: BitmapDescriptor.defaultMarkerWithHue(
                 _selectedRestaurantId == placeId
-                 ? BitmapDescriptor.hueGreen// Use a different color for the selected restaurant
-                : BitmapDescriptor.hueOrange, // Default color for non-selected restaurants
+                 ? BitmapDescriptor.hueYellow// Use a different color for the selected restaurant
+                : BitmapDescriptor.hueRed, // Default color for non-selected restaurants
               ),
-              infoWindow: InfoWindow(title: restaurant['name']),
-            );
+             infoWindow: InfoWindow(
+            title: restaurant['name'],
+            snippet: 'distance : ${distanceInKm.toStringAsFixed(2)} km', // Add distance to the info window
+            ),
+             );
           }).toSet();
 
           setState(() {
@@ -399,6 +424,11 @@ class _LocationViewState extends State<LocationView> {
             _markers.clear();
             _markers.addAll(restaurantMarkers);
           });
+
+          //fetch aditional details for each resaturant
+          for (var restaurant in _restaurants) {
+            await _fetchPlaceDetails(restaurant['place_id']);
+          }
         }
       } else {
         print("Failed to fetch nearby restaurants: ${response.body}");
@@ -406,6 +436,38 @@ class _LocationViewState extends State<LocationView> {
     } catch (e) {
       print("Error fetching nearby restaurants: $e");
     }
+  }
+
+  //fetch place details for a specific restaurant using google place details api
+  Future<void> _fetchPlaceDetails(String placeId) async {
+    final String detailsUrl = 'https://maps.googleapis.com/maps/api/place/details/json'
+     '?place_id=$placeId'
+     '&fields=name,formatted_phone_number,opening_hours'
+     '&key=$_placesApiKey';
+
+     try {
+      final response = await http.get(Uri.parse(detailsUrl));
+      if(response.statusCode == 200){
+        final data = json.decode(response.body);
+
+        if(data['status'] == 'OK'){
+          var restaurantDetails = data['result'];
+          setState(() {
+          // Update the restaurant details with the phone number and opening hours
+          for (var restaurant in _restaurants) {
+            if (restaurant['place_id'] == placeId) {
+              restaurant['phone_number'] = restaurantDetails['formatted_phone_number'];
+              restaurant['opening_hours'] = restaurantDetails['opening_hours']?['weekday_text'] ?? [];
+            }
+          }
+        });
+      }
+     } else {
+      print("Failed to fetch restaurant details: ${response.body}");
+     }
+  } catch(e) {
+    print("Error fetching restaurant details: $e");
+  }
   }
 
   // Toggle the bottom sheet visibility

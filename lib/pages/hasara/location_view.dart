@@ -6,6 +6,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart' as http; // Import for making API requests
 import 'package:custom_rating_bar/custom_rating_bar.dart';  //ratings
 import 'package:geolocator/geolocator.dart';
+import 'DirectionView.dart';
 
 class LocationView extends StatefulWidget {
   const LocationView({super.key});
@@ -255,14 +256,43 @@ class _LocationViewState extends State<LocationView> {
                                               color: Color.fromARGB(137, 10, 9, 9),
                                             ),
                                           ),
-                                        const SizedBox(height: 10),
-                                        Text(
-                                          restaurant['vicinity'] ?? 'No address provided',
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.white54,
+                                          const SizedBox(height: 10),
+                                          Align(
+                                                alignment: Alignment.centerRight, // Aligns to the right
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                if(_currentP != null){
+                                                  //Navigate to the dirction view
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(builder: (context) => DirectionView(
+                                                      destination : LatLng(
+                                                         restaurant['geometry']['location']['lat'],
+                                                         restaurant['geometry']['location']['lng']
+                                                      ),
+                                                    ),
+                                                    ),
+                                                  );
+                                                }
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                foregroundColor: Colors
+                                                    .white, backgroundColor: const Color(
+                                                    0xFFF86A2E), // Set the text color to white
+                                              ),
+                                              child:
+                                                  const Text('Get Directions'),
+                                            ),
                                           ),
-                                        ),
+
+                                        // const SizedBox(height: 10),
+                                        // Text(
+                                        //   restaurant['vicinity'] ?? 'No address provided',
+                                        //   style: const TextStyle(
+                                        //     fontSize: 12,
+                                        //     color: Colors.white54,
+                                        //   ),
+                                        // ),
                                       ],
                                     ),
                                   ),

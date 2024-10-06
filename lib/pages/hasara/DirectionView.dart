@@ -19,7 +19,7 @@ class _DirectionViewState extends State<DirectionView> {
   GoogleMapController? _mapController;
   List<LatLng> _routeCoordinates = []; // Stores the polyline coordinates for the route
   Set<Polyline> _polylines = {}; // Store the route polylines
-  String _directionsApiKey = "AIzaSyCIOwQeu3gc7WmTqb_aqnznqufJalwZ_s4"; // Google Directions API key
+  final String _directionsApiKey = "AIzaSyCIOwQeu3gc7WmTqb_aqnznqufJalwZ_s4"; 
 
   @override
   void initState() {
@@ -31,8 +31,33 @@ class _DirectionViewState extends State<DirectionView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Directions"),
+        title: const Text("Find Destination",
+         style: TextStyle(
+         color: Colors.white, // Set text color to white 
+       ),
+        ),
         backgroundColor: const Color(0xFFF86A2E),
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: InkWell(
+            onTap: () {
+               Navigator.of(context).pop();
+            },
+            child:Container(
+              width:40,
+              height: 40,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+              ), 
+              child: const Icon(
+                Icons.arrow_back,
+                color: Color(0xFFF86A2E), // Orange arrow color
+                size: 25, // Icon size
+              ),   
+            ),
+          ),
+        ),
       ),
       body: _currentLocation == null
           ? const Center(child: CircularProgressIndicator())
@@ -43,7 +68,7 @@ class _DirectionViewState extends State<DirectionView> {
               },
               initialCameraPosition: CameraPosition(
                 target: _currentLocation!,
-                zoom: 13,
+                zoom: 15,
               ),
               myLocationEnabled: true, // Enable live location tracking
               polylines: _polylines, // Display the route
@@ -106,7 +131,7 @@ class _DirectionViewState extends State<DirectionView> {
               Polyline(
                 polylineId: const PolylineId('route'),
                 points: _routeCoordinates,
-                color: Colors.blue,
+                color: const Color.fromARGB(255, 241, 107, 39),
                 width: 5,
               ),
             };

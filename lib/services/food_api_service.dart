@@ -82,4 +82,45 @@ class FoodService {
     print('Failed to fetch data from API for $name.');
     return recipes;
   }
+
+  // New Function: Fetch Nutrition Data for a specific recipe ID
+  static Future<Map<String, dynamic>> getNutritionData(int recipeId) async {
+    String apiEndpointUrl =
+        'https://api.spoonacular.com/recipes/$recipeId/nutritionWidget.json';
+
+    // Send the GET request to the API
+    final response = await http.get(
+      Uri.parse(apiEndpointUrl),
+      headers: {
+        'x-rapidapi-key': apiKey,
+        'x-rapidapi-host': 'spoonacular-recipe-food-nutrition-v1.p.rapidapi.com',
+      },
+    );
+
+    // Check if the request was successful
+    if (response.statusCode == 200) {
+      // Log the response body for debugging
+      print('Response body: ${response.body}');
+
+      // Parse the response
+      final data = jsonDecode(response.body);
+
+      // Return the full fetched nutritional data as is
+      print('Fetched nutrition data for recipe ID: $data');
+      return data;
+    } else {
+      // Handle failure by logging the error and returning empty data
+      print('Failed to fetch nutrition data for recipe ID: $recipeId');
+      print('Error: ${response.statusCode} - ${response.reasonPhrase}');
+
+      // Return a map with 'N/A' values to indicate no data
+      return {
+        'calories': 'N/A',
+        'carbs': 'N/A',
+        'fat': 'N/A',
+        'protein': 'N/A',
+        'bad': [], // Include 'bad' key as well
+      };
+    }
+  }
 }

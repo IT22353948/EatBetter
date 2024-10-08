@@ -20,11 +20,13 @@ class _DirectionViewState extends State<DirectionView> {
   List<LatLng> _routeCoordinates = []; // Stores the polyline coordinates for the route
   Set<Polyline> _polylines = {}; // Store the route polylines
   final String _directionsApiKey = "AIzaSyCIOwQeu3gc7WmTqb_aqnznqufJalwZ_s4"; 
+  Set<Marker> _markers = {}; 
 
   @override
   void initState() {
     super.initState();
     _getLocationUpdates();
+    _addRestaurantMarker();
   }
 
   @override
@@ -72,6 +74,7 @@ class _DirectionViewState extends State<DirectionView> {
               ),
               myLocationEnabled: true, // Enable live location tracking
               polylines: _polylines, // Display the route
+              markers: _markers,
             ),
     );
   }
@@ -99,17 +102,55 @@ class _DirectionViewState extends State<DirectionView> {
           _currentLocation = LatLng(currentLocation.latitude!, currentLocation.longitude!);
         });
 
+        // Update user location marker
+        _addUserLocationMarker();
+
         // Get directions route when current location is updated
         _fetchRoute(_currentLocation!, widget.destination);
       }
     });
   }
 
+ //add resturant marker
+ void _addRestaurantMarker() {
+    setState(() {
+      _markers.add(
+        Marker(
+          markerId: const MarkerId('restaurant'),
+          position: widget.destination,
+          infoWindow: const InfoWindow(
+            title: 'Restaurant',
+            snippet: 'Your destination',
+          ),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRose), 
+        ),
+      );
+    });
+  }
+
+  //add user location marker
+  void _addUserLocationMarker() {
+    if (_currentLocation != null) {
+      setState(() {
+        _markers.add(
+          Marker(
+            markerId: const MarkerId('currentLocation'),
+            position: _currentLocation!,
+            infoWindow: const InfoWindow(
+              title: 'Your Location',
+            ),
+            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue), // Blue marker for current location
+          ),
+        );
+      });
+    }
+  }
+
   // Move the camera to the current location
   void _moveCameraToCurrentLocation() {
     if (_mapController != null && _currentLocation != null) {
       _mapController!.animateCamera(
-        CameraUpdate.newLatLngZoom(_currentLocation!, 13),
+        CameraUpdate.newLatLngZoom(_currentLocation!, 15),
       );
     }
   }

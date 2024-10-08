@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:vector_math/vector_math_64.dart' as math;
 import 'package:eat_better/services/food_api_service.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:eat_better/pages/nutri_details_charts.dart';
 
 Map<String, dynamic> response = {}; // Nutritional data storage
+Map<String, dynamic> nutrient1 = {}; // Nutritional data storage
+Map<String, dynamic> nutrient2 = {}; // Nutritional data storage
+Map<String, dynamic> nutrient3 = {}; // Nutritional data storage
+Map<String, dynamic> nutrient4 = {}; // Nutritional data storage
+Map<String, dynamic> nutrient5 = {}; // Nutritional data storage
+Map<String, dynamic> nutrient6 = {}; // Nutritional data storage
 
 class NutriDetails extends StatefulWidget {
   final String name;
@@ -28,6 +35,13 @@ class _NutriDetailsState extends State<NutriDetails> {
   void initState() {
     super.initState();
     fetchNutritionData(widget.id);
+
+    print('data1: ${nutrient1}');
+    print('data2: ${nutrient2}');
+    print('data3: ${nutrient3}');
+    print('data4: ${nutrient4}');
+    print('data5: ${nutrient5}');
+    print('data6: ${nutrient6}');
   }
 
   void fetchNutritionData(int recipeId) async {
@@ -36,9 +50,16 @@ class _NutriDetailsState extends State<NutriDetails> {
     });
 
     var data = await FoodService.getNutritionData(recipeId);
+
     setState(() {
       response = data;
       _isLoading = false;
+      nutrient1 = response['nutrients'][5];
+      nutrient2 = response['nutrients'][7];
+      nutrient3 = response['nutrients'][10];
+      nutrient4 = response['nutrients'][12];
+      nutrient5 = response['nutrients'][17];
+      nutrient6 = response['nutrients'][22];
     });
   }
 
@@ -60,6 +81,7 @@ class _NutriDetailsState extends State<NutriDetails> {
         ),
       ),
       body: Container(
+        padding: const EdgeInsets.all(5),
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
@@ -80,7 +102,7 @@ class _NutriDetailsState extends State<NutriDetails> {
               ),
               const SizedBox(height: 20),
               Text(
-                'Nutritional Details ${widget.name} for ID: ${widget.id}',
+                'Nutritional Details ${widget.name} of ID: ${widget.id}',
                 style: const TextStyle(fontSize: 24),
               ),
               const SizedBox(height: 20),
@@ -97,13 +119,19 @@ class _NutriDetailsState extends State<NutriDetails> {
                       MaterialPageRoute(
                         builder: (context) => NutriDetailsCharts(
                           name: widget.name,
-                          nutriData: response,
+                          id: widget.id,
+                          nutri1: nutrient1,
+                          nutri2: nutrient2,
+                          nutri3: nutrient3,
+                          nutri4: nutrient4,
+                          nutri5: nutrient5,
+                          nutri6: nutrient6,
                         ),
                       ),
                     );
                   },
                   child: Container(
-                    margin: const EdgeInsets.all(20),
+                    margin: const EdgeInsets.all(10),
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       color: Color.fromARGB(101, 248, 100, 37),
@@ -111,7 +139,10 @@ class _NutriDetailsState extends State<NutriDetails> {
                     ),
                     child: _isLoading
                         ? const Center(
-                            child: CircularProgressIndicator(),
+                            child: SpinKitRing(
+                              color: Colors.orange,
+                              size: 50.0,
+                            ),
                           )
                         : Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -133,6 +164,7 @@ class _NutriDetailsState extends State<NutriDetails> {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
+                                  const SizedBox(height: 4),
                                   _IngredientProgress(
                                     ingredient: "Protein",
                                     progress: getNormalizedValue(
@@ -141,7 +173,8 @@ class _NutriDetailsState extends State<NutriDetails> {
                                             .replaceAll('g', '')
                                             .trim()),
                                         50),
-                                    progressColor: Colors.green,
+                                    progressColor:
+                                        const Color.fromARGB(255, 0, 255, 8),
                                     Amount: double.parse(response['protein']
                                         .toString()
                                         .replaceAll('g', '')
@@ -149,7 +182,7 @@ class _NutriDetailsState extends State<NutriDetails> {
                                     width: w * 0.39,
                                     MaxDaily: 50,
                                   ),
-                                  const SizedBox(height: 5),
+                                  const SizedBox(height: 10),
                                   _IngredientProgress(
                                       ingredient: "Carbs",
                                       progress: getNormalizedValue(
@@ -158,14 +191,15 @@ class _NutriDetailsState extends State<NutriDetails> {
                                               .replaceAll('g', '')
                                               .trim()),
                                           300),
-                                      progressColor: Colors.red,
+                                      progressColor:
+                                          Color.fromARGB(255, 255, 251, 0),
                                       Amount: double.parse(response['carbs']
                                           .toString()
                                           .replaceAll('g', '')
                                           .trim()),
                                       width: w * 0.39,
                                       MaxDaily: 300),
-                                  const SizedBox(height: 5),
+                                  const SizedBox(height: 10),
                                   _IngredientProgress(
                                       ingredient: "Fat",
                                       progress: getNormalizedValue(
@@ -174,13 +208,15 @@ class _NutriDetailsState extends State<NutriDetails> {
                                               .replaceAll('g', '')
                                               .trim()),
                                           70),
-                                      progressColor: Colors.pink,
+                                      progressColor:
+                                          Color.fromARGB(255, 255, 0, 0),
                                       Amount: double.parse(response['fat']
                                           .toString()
                                           .replaceAll('g', '')
                                           .trim()),
                                       width: w * 0.39,
                                       MaxDaily: 70),
+                                  const SizedBox(height: 4),
                                 ],
                               )
                             ],
@@ -219,7 +255,7 @@ class _IngredientProgress extends StatelessWidget {
         Text(
           ingredient,
           style: TextStyle(
-            fontSize: 14,
+            fontSize: 16,
             fontWeight: FontWeight.w900,
           ),
         ),
@@ -229,7 +265,7 @@ class _IngredientProgress extends StatelessWidget {
             Stack(
               children: <Widget>[
                 Container(
-                  height: 15,
+                  height: 16,
                   width: width,
                   decoration: const BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(5)),
@@ -237,7 +273,7 @@ class _IngredientProgress extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  height: 15,
+                  height: 16,
                   width: width * progress,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(5)),
@@ -269,7 +305,7 @@ class _NutrientInfo extends StatelessWidget {
             fontWeight: FontWeight.w500,
           ),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 15),
         Text(
           value,
           style: TextStyle(
@@ -358,7 +394,7 @@ class _RadialPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint()
-      ..strokeWidth = 10
+      ..strokeWidth = 16
       ..shader = const LinearGradient(
         colors: [
           Color.fromARGB(192, 187, 5, 5), // Start color

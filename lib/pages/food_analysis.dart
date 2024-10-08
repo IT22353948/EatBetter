@@ -19,6 +19,7 @@ class _FoodAnalysisState extends State<FoodAnalysis> {
       //   backgroundColor: const Color.fromARGB(255, 150, 22, 0),
       // ),
       body: Container(
+        padding: const EdgeInsets.all(5),
         // Apply gradient background
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -108,10 +109,10 @@ class _FoodAnalysisState extends State<FoodAnalysis> {
                       Text('Commons',
                           style: TextStyle(
                               fontSize: w * .07, fontWeight: FontWeight.bold)),
-                      SizedBox(width: w*.022),
+                      SizedBox(width: w * .022),
                     ],
                   ),
-                  SizedBox(height: w*.022),
+                  SizedBox(height: w * .022),
                   const CommonTab(),
                 ],
               ),

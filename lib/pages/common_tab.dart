@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:eat_better/services/food_api_service.dart';
 import 'package:eat_better/pages/nutri_details.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class CommonTab extends StatelessWidget {
   const CommonTab({super.key});
@@ -94,7 +95,10 @@ class HomeTabBarView extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-              child: CircularProgressIndicator(),
+              child: SpinKitRing(
+                color: Colors.orange,
+                size: 50.0,
+              ),
             );
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(

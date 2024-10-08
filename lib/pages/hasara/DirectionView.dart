@@ -122,7 +122,7 @@ class _DirectionViewState extends State<DirectionView> {
             title: 'Restaurant',
             snippet: 'Your destination',
           ),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRose), 
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange), 
         ),
       );
     });
@@ -172,7 +172,7 @@ class _DirectionViewState extends State<DirectionView> {
               Polyline(
                 polylineId: const PolylineId('route'),
                 points: _routeCoordinates,
-                color: const Color.fromARGB(255, 241, 107, 39),
+                color: const Color.fromARGB(255, 108, 113, 118),
                 width: 5,
               ),
             };

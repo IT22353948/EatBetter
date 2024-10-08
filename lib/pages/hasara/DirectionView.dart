@@ -38,49 +38,104 @@ class _DirectionViewState extends State<DirectionView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Find Destination",
-         style: TextStyle(
-         color: Colors.white, // Set text color to white 
-       ),
+        title: const Text(
+          "Find Destination",
+          style: TextStyle(
+            color: Colors.white, // Set text color to white
+          ),
         ),
         backgroundColor: const Color(0xFFF86A2E),
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
           child: InkWell(
             onTap: () {
-               Navigator.of(context).pop();
+              Navigator.of(context).pop();
             },
-            child:Container(
-              width:40,
+            child: Container(
+              width: 40,
               height: 40,
               decoration: const BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
-              ), 
+              ),
               child: const Icon(
                 Icons.arrow_back,
                 color: Color(0xFFF86A2E), // Orange arrow color
                 size: 25, // Icon size
-              ),   
+              ),
             ),
           ),
         ),
       ),
-      body: _currentLocation == null
-          ? const Center(child: CircularProgressIndicator())
-          : GoogleMap(
-              onMapCreated: (GoogleMapController controller) {
-                _mapController = controller;
-                _moveCameraToCurrentLocation();
-              },
-              initialCameraPosition: CameraPosition(
-                target: _currentLocation!,
-                zoom: 15,
+      body: Column(
+        children: [
+          // Flexible Google Map to take up remaining space
+          Flexible(
+            flex: 7, // Adjust this value to control the height of the map
+            child: _currentLocation == null
+                ? const Center(child: CircularProgressIndicator())
+                : GoogleMap(
+                    onMapCreated: (GoogleMapController controller) {
+                      _mapController = controller;
+                      _moveCameraToCurrentLocation();
+                    },
+                    initialCameraPosition: CameraPosition(
+                      target: _currentLocation!,
+                      zoom: 15,
+                    ),
+                    myLocationEnabled: true, // Enable live location tracking
+                    polylines: _polylines, // Display the route
+                    markers: _markers, // Display the markers
+                  ),
+          ),
+             Container(
+            padding: const EdgeInsets.all(8.0),
+            decoration: const BoxDecoration(
+              color: Colors.white, // Background color
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(16.0), // Top left corner radius
+                topRight: Radius.circular(16.0), // Top right corner radius
               ),
-              myLocationEnabled: true, // Enable live location tracking
-              polylines: _polylines, // Display the route
-              markers: _markers,
             ),
+            child: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(12.0),
+                topRight: Radius.circular(12.0),
+              ),
+              child: Card(
+                elevation: 4.0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(
+                      12.0), // Rounded corners for the entire card
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget
+                            .restaurantName, // Restaurant name displayed in the card
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8.0),
+                      const Text(
+                        "You are navigating to this location.",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(height: 8.0),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 

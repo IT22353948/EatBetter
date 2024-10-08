@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as location_package;
@@ -8,11 +9,11 @@ class DirectionView extends StatefulWidget {
   final LatLng destination; // Destination (restaurant) location
   final String restaurantName; // Add restaurant name parameter
 
-
   const DirectionView({
     required this.destination,
     required this.restaurantName,
-    super.key});
+    super.key,
+  });
 
   @override
   _DirectionViewState createState() => _DirectionViewState();
@@ -24,8 +25,9 @@ class _DirectionViewState extends State<DirectionView> {
   GoogleMapController? _mapController;
   List<LatLng> _routeCoordinates = []; // Stores the polyline coordinates for the route
   Set<Polyline> _polylines = {}; // Store the route polylines
-  final String _directionsApiKey = "AIzaSyCIOwQeu3gc7WmTqb_aqnznqufJalwZ_s4"; 
-  Set<Marker> _markers = {}; 
+  final String _directionsApiKey = "AIzaSyCIOwQeu3gc7WmTqb_aqnznqufJalwZ_s4";
+  Set<Marker> _markers = {};
+  double _distanceToDestination = 0.0; // Distance between user and restaurant
 
   @override
   void initState() {
@@ -42,7 +44,7 @@ class _DirectionViewState extends State<DirectionView> {
         title: const Text(
           "Find Destination",
           style: TextStyle(
-            color: Colors.white, // Set text color to white
+            color: Colors.white,
           ),
         ),
         backgroundColor: const Color(0xFFF86A2E),
@@ -61,8 +63,8 @@ class _DirectionViewState extends State<DirectionView> {
               ),
               child: const Icon(
                 Icons.arrow_back,
-                color: Color(0xFFF86A2E), // Orange arrow color
-                size: 25, // Icon size
+                color: Color(0xFFF86A2E),
+                size: 25,
               ),
             ),
           ),
@@ -70,9 +72,8 @@ class _DirectionViewState extends State<DirectionView> {
       ),
       body: Column(
         children: [
-          // Flexible Google Map to take up remaining space
           Flexible(
-            flex: 7, // Adjust this value to control the height of the map
+            flex: 7,
             child: _currentLocation == null
                 ? const Center(child: CircularProgressIndicator())
                 : GoogleMap(
@@ -84,18 +85,18 @@ class _DirectionViewState extends State<DirectionView> {
                       target: _currentLocation!,
                       zoom: 15,
                     ),
-                    myLocationEnabled: true, // Enable live location tracking
-                    polylines: _polylines, // Display the route
-                    markers: _markers, // Display the markers
+                    myLocationEnabled: true,
+                    polylines: _polylines,
+                    markers: _markers,
                   ),
           ),
-             Container(
+          Container(
             padding: const EdgeInsets.all(8.0),
             decoration: const BoxDecoration(
-              color: Colors.white, // Background color
+              color: Colors.white,
               borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(16.0), // Top left corner radius
-                topRight: Radius.circular(16.0), // Top right corner radius
+                topLeft: Radius.circular(16.0),
+                topRight: Radius.circular(16.0),
               ),
             ),
             child: ClipRRect(
@@ -106,33 +107,79 @@ class _DirectionViewState extends State<DirectionView> {
               child: Card(
                 elevation: 4.0,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(
-                      12.0), // Rounded corners for the entire card
+                  borderRadius: BorderRadius.circular(12.0),
                 ),
                 child: Container(
-                  width: screenWidth * 1,
+                  width: screenWidth,
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        widget
-                            .restaurantName, // Restaurant name displayed in the card
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      Row(
+                        children: [
+                          const Icon(Icons.location_on, color: Colors.blue),
+                          const SizedBox(width: 8.0),
+                          const Text(
+                            'Your Location',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Spacer(),
+                          Text(
+                            "${_distanceToDestination.toStringAsFixed(2)} km",
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 8.0),
+                      const SizedBox(height: 16.0),
+                      Row(
+                        children: [
+                          Icon(Icons.restaurant, color: Colors.orange),
+                          const SizedBox(width: 8.0),
+                          Text(
+                            widget.restaurantName,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16.0),
+                      // Line connecting the two points (user and restaurant)
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              height: 2,
+                              decoration: const BoxDecoration(
+                                color: Colors.blue, 
+                                gradient: LinearGradient(
+                                  colors: [Colors.blue, Colors.orange],
+                                  stops: [
+                                    0.2, // Proximity of user to the restaurant can change the stop
+                                    1.0
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16.0),
                       const Text(
-                        "You are navigating to this location.",
+                        "You're navigating to this location.",
                         style: TextStyle(
                           fontSize: 16,
                           color: Colors.grey,
-                          ),
+                        ),
                       ),
-                      const SizedBox(height: 8.0),
                     ],
                   ),
                 ),
@@ -170,14 +217,17 @@ class _DirectionViewState extends State<DirectionView> {
         // Update user location marker
         _addUserLocationMarker();
 
+        // Calculate distance
+        _calculateDistance();
+
         // Get directions route when current location is updated
         _fetchRoute(_currentLocation!, widget.destination);
       }
     });
   }
 
- //add resturant marker
- void _addRestaurantMarker() {
+  // Add restaurant marker
+  void _addRestaurantMarker() {
     setState(() {
       _markers.add(
         Marker(
@@ -187,13 +237,13 @@ class _DirectionViewState extends State<DirectionView> {
             title: widget.restaurantName,
             snippet: 'Your destination',
           ),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange), 
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
         ),
       );
     });
   }
 
-  //add user location marker
+  // Add user location marker
   void _addUserLocationMarker() {
     if (_currentLocation != null) {
       setState(() {
@@ -204,7 +254,7 @@ class _DirectionViewState extends State<DirectionView> {
             infoWindow: const InfoWindow(
               title: 'Your Location',
             ),
-            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue), // Blue marker for current location
+            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
           ),
         );
       });
@@ -220,6 +270,36 @@ class _DirectionViewState extends State<DirectionView> {
     }
   }
 
+  // Calculate distance between user and restaurant using Haversine formula
+  void _calculateDistance() {
+    if (_currentLocation != null && widget.destination != null) {
+      double distance = _getDistanceBetweenCoordinates(
+        _currentLocation!.latitude,
+        _currentLocation!.longitude,
+        widget.destination.latitude,
+        widget.destination.longitude,
+      );
+      setState(() {
+        _distanceToDestination = distance;
+      });
+    }
+  }
+
+  // Haversine formula to calculate distance between two lat/lng points
+  double _getDistanceBetweenCoordinates(double lat1, double lon1, double lat2, double lon2) {
+    const int radiusOfEarthKm = 6371;
+    double dLat = _degreesToRadians(lat2 - lat1);
+    double dLon = _degreesToRadians(lon2 - lon1);
+    double a = sin(dLat / 2) * sin(dLat / 2) +
+        cos(_degreesToRadians(lat1)) * cos(_degreesToRadians(lat2)) * sin(dLon / 2) * sin(dLon / 2);
+    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    return radiusOfEarthKm * c;
+  }
+
+  double _degreesToRadians(double degrees) {
+    return degrees * pi / 180;
+  }
+
   // Fetch the route from the current location to the destination
   Future<void> _fetchRoute(LatLng origin, LatLng destination) async {
     String directionsUrl =
@@ -233,14 +313,16 @@ class _DirectionViewState extends State<DirectionView> {
           List<LatLng> route = _decodePolyline(data['routes'][0]['overview_polyline']['points']);
           setState(() {
             _routeCoordinates = route;
-            _polylines = {
+            //Clear previous polylines and add a new one
+            _polylines.clear();
+            _polylines.add (
               Polyline(
                 polylineId: const PolylineId('route'),
                 points: _routeCoordinates,
                 color: const Color.fromARGB(255, 160, 205, 249),
                 width: 5,
               ),
-            };
+            );
           });
         }
       }

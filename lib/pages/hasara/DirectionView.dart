@@ -36,6 +36,7 @@ class _DirectionViewState extends State<DirectionView> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -108,7 +109,8 @@ class _DirectionViewState extends State<DirectionView> {
                   borderRadius: BorderRadius.circular(
                       12.0), // Rounded corners for the entire card
                 ),
-                child: Padding(
+                child: Container(
+                  width: screenWidth * 1,
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -125,7 +127,10 @@ class _DirectionViewState extends State<DirectionView> {
                       const SizedBox(height: 8.0),
                       const Text(
                         "You are navigating to this location.",
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
+                          ),
                       ),
                       const SizedBox(height: 8.0),
                     ],

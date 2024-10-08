@@ -1,38 +1,72 @@
 import 'package:flutter/material.dart';
 import 'package:vector_math/vector_math_64.dart' as math;
+import 'package:eat_better/services/food_api_service.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:eat_better/pages/nutri_details_charts.dart';
 
-class NutriDetails extends StatelessWidget {
+Map<String, dynamic> response = {}; // Nutritional data storage
+
+class NutriDetails extends StatefulWidget {
+  final String name;
   final int id;
   final String imageUrl;
 
-  const NutriDetails({super.key, required this.id, required this.imageUrl});
+  const NutriDetails(
+      {super.key,
+      required this.name,
+      required this.id,
+      required this.imageUrl});
+
+  @override
+  State<NutriDetails> createState() => _NutriDetailsState();
+}
+
+class _NutriDetailsState extends State<NutriDetails> {
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchNutritionData(widget.id);
+  }
+
+  void fetchNutritionData(int recipeId) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    var data = await FoodService.getNutritionData(recipeId);
+    setState(() {
+      response = data;
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
     final w = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Nutritional Details'),
+        // title: const Text('Nutritional Details'),
         backgroundColor: Color.fromARGB(126, 248, 100, 37),
         leading: IconButton(
           iconSize: 30,
           icon: Image.asset('assets/icons/BackButton.png'),
           onPressed: () {
-            Navigator.pop(
-                context); // This will navigate back to the previous screen
+            Navigator.pop(context);
           },
         ),
       ),
       body: Container(
-        // Apply gradient background
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomCenter,
             colors: [
-              Color.fromARGB(126, 248, 100, 37), // Orange
-              Colors.white, // White
+              Color.fromARGB(126, 248, 100, 37),
+              Colors.white,
             ],
           ),
         ),
@@ -40,69 +74,118 @@ class NutriDetails extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Display image in a centered circle
               CircleAvatar(
                 radius: 100,
-                backgroundImage: NetworkImage(imageUrl),
+                backgroundImage: NetworkImage(widget.imageUrl),
               ),
               const SizedBox(height: 20),
               Text(
-                'Nutritional Details for ID: $id',
+                'Nutritional Details ${widget.name} for ID: ${widget.id}',
                 style: const TextStyle(fontSize: 24),
               ),
               const SizedBox(height: 20),
+
+              // Make the card clickable using InkWell
               SizedBox(
                 height: h * .3,
                 width: w,
-                child: Container(
-                  margin: const EdgeInsets.all(20),
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Color.fromARGB(101, 248, 100, 37),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        _RadialProgress(
-                          width: w * .39,
-                          height: h * .19,
-                          progress: 0.7,
+                child: InkWell(
+                  onTap: () {
+                    // Navigate to another page when clicked
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NutriDetailsCharts(
+                          name: widget.name,
+                          nutriData: response,
                         ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            _IngredientProgress(
-                              ingredient: "Protein",
-                              progress: 0.3,
-                              progressColor: Colors.green,
-                              leftAmount: 72,
-                              width: w * 0.39,
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            _IngredientProgress(
-                              ingredient: "Carbs",
-                              progress: 0.2,
-                              progressColor: Colors.red,
-                              leftAmount: 252,
-                              width: w * 0.39,
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            _IngredientProgress(
-                              ingredient: "Fat",
-                              progress: 0.1,
-                              progressColor: Colors.yellow,
-                              leftAmount: 61,
-                              width: w * 0.39,
-                            ),
-                          ],
-                        )
-                      ]),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(101, 248, 100, 37),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: _isLoading
+                        ? const Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              _RadialProgress(
+                                value: double.parse(response['calories']
+                                    .toString()
+                                    .replaceAll('kCal', '')
+                                    .trim()),
+                                width: w * .39,
+                                height: h * .19,
+                                progress: getNormalizedValue(
+                                    double.parse(response['calories']
+                                        .toString()
+                                        .replaceAll('kCal', '')
+                                        .trim()),
+                                    1500),
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  _IngredientProgress(
+                                    ingredient: "Protein",
+                                    progress: getNormalizedValue(
+                                        double.parse(response['protein']
+                                            .toString()
+                                            .replaceAll('g', '')
+                                            .trim()),
+                                        50),
+                                    progressColor: Colors.green,
+                                    Amount: double.parse(response['protein']
+                                        .toString()
+                                        .replaceAll('g', '')
+                                        .trim()),
+                                    width: w * 0.39,
+                                    MaxDaily: 50,
+                                  ),
+                                  const SizedBox(height: 5),
+                                  _IngredientProgress(
+                                      ingredient: "Carbs",
+                                      progress: getNormalizedValue(
+                                          double.parse(response['carbs']
+                                              .toString()
+                                              .replaceAll('g', '')
+                                              .trim()),
+                                          300),
+                                      progressColor: Colors.red,
+                                      Amount: double.parse(response['carbs']
+                                          .toString()
+                                          .replaceAll('g', '')
+                                          .trim()),
+                                      width: w * 0.39,
+                                      MaxDaily: 300),
+                                  const SizedBox(height: 5),
+                                  _IngredientProgress(
+                                      ingredient: "Fat",
+                                      progress: getNormalizedValue(
+                                          double.parse(response['fat']
+                                              .toString()
+                                              .replaceAll('g', '')
+                                              .trim()),
+                                          70),
+                                      progressColor: Colors.pink,
+                                      Amount: double.parse(response['fat']
+                                          .toString()
+                                          .replaceAll('g', '')
+                                          .trim()),
+                                      width: w * 0.39,
+                                      MaxDaily: 70),
+                                ],
+                              )
+                            ],
+                          ),
+                  ),
                 ),
               ),
             ],
@@ -115,14 +198,15 @@ class NutriDetails extends StatelessWidget {
 
 class _IngredientProgress extends StatelessWidget {
   final String ingredient;
-  final int leftAmount;
-  final double progress, width;
+  final double Amount;
+  final double progress, width, MaxDaily;
   final Color progressColor;
 
   const _IngredientProgress(
       {super.key,
+      required this.MaxDaily,
       required this.ingredient,
-      required this.leftAmount,
+      required this.Amount,
       required this.progress,
       required this.width,
       required this.progressColor});
@@ -133,10 +217,10 @@ class _IngredientProgress extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          ingredient.toUpperCase(),
+          ingredient,
           style: TextStyle(
             fontSize: 14,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w900,
           ),
         ),
         Column(
@@ -162,7 +246,7 @@ class _IngredientProgress extends StatelessWidget {
                 )
               ],
             ),
-            Text("${leftAmount}g left"),
+            Text("${Amount.ceil()}g/${MaxDaily.ceil()}g"),
           ],
         ),
       ],
@@ -206,9 +290,10 @@ class _NutrientInfo extends StatelessWidget {
 }
 
 class _RadialProgress extends StatelessWidget {
-  final double width, height, progress;
+  final double width, height, progress, value;
   const _RadialProgress(
       {super.key,
+      required this.value,
       required this.width,
       required this.height,
       required this.progress});
@@ -228,7 +313,7 @@ class _RadialProgress extends StatelessWidget {
             text: TextSpan(
               children: [
                 TextSpan(
-                  text: "1731",
+                  text: value.toString(),
                   style: TextStyle(
                     fontSize: 38,
                     fontWeight: FontWeight.w700,
@@ -301,4 +386,8 @@ class _RadialPainter extends CustomPainter {
   bool shouldRepaint(CustomPainter oldDelegate) {
     return true;
   }
+}
+
+double getNormalizedValue(double value, double maxValue) {
+  return value / maxValue;
 }

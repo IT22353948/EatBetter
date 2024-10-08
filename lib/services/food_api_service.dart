@@ -10,6 +10,9 @@ class FoodService {
   // Cache to store fetched recipes by name
   static Map<String, List<Map<String, dynamic>>> _cache = {};
 
+  // Cache for nutrition data by recipe ID
+  static Map<int, Map<String, dynamic>> _nutritionCache = {};
+
   //this function is used to get the recipe for the food item.
   //when call this function have to pass the name of the food. it will fetch upto 3 items for the food item.
   //tochange the number of items to fetch change the number in the apiEndpointUrl
@@ -83,37 +86,40 @@ class FoodService {
     return recipes;
   }
 
-  // New Function: Fetch Nutrition Data for a specific recipe ID
+  // Fetch nutrition data with caching
   static Future<Map<String, dynamic>> getNutritionData(int recipeId) async {
-    String apiEndpointUrl =
-        'https://api.spoonacular.com/recipes/$recipeId/nutritionWidget.json';
+    // Check if the nutrition data is already cached
+    if (_nutritionCache.containsKey(recipeId)) {
+      print('Returning cached nutrition data for recipe ID: $recipeId');
+      return _nutritionCache[recipeId]!;
+    }
 
-    // Send the GET request to the API
+    // If not cached, proceed with API call
+    String apiEndpointUrl =
+        'https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/$recipeId/nutritionWidget.json';
+
     final response = await http.get(
       Uri.parse(apiEndpointUrl),
       headers: {
         'x-rapidapi-key': apiKey,
-        'x-rapidapi-host': 'spoonacular-recipe-food-nutrition-v1.p.rapidapi.com',
+        'x-rapidapi-host':
+            'spoonacular-recipe-food-nutrition-v1.p.rapidapi.com',
       },
     );
 
-    // Check if the request was successful
     if (response.statusCode == 200) {
-      // Log the response body for debugging
-      print('Response body: ${response.body}');
-
-      // Parse the response
       final data = jsonDecode(response.body);
 
-      // Return the full fetched nutritional data as is
-      print('Fetched nutrition data for recipe ID: $data');
+      // Cache the fetched nutrition data
+      _nutritionCache[recipeId] = data;
+
+      print('Fetched and cached nutrition data for recipe ID: $recipeId');
       return data;
     } else {
-      // Handle failure by logging the error and returning empty data
       print('Failed to fetch nutrition data for recipe ID: $recipeId');
       print('Error: ${response.statusCode} - ${response.reasonPhrase}');
 
-      // Return a map with 'N/A' values to indicate no data
+      // Return fallback data if the API call fails
       return {
         'calories': 'N/A',
         'carbs': 'N/A',

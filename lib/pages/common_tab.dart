@@ -42,7 +42,7 @@ class CommonTab extends StatelessWidget {
             height: h * .3,
             child: const TabBarView(
               children: [
-                HomeTabBarView(recipe: 'rice'),
+                HomeTabBarView(recipe: 'fried rice'),
                 HomeTabBarView(recipe: 'pasta'),
                 HomeTabBarView(recipe: 'bread'),
                 HomeTabBarView(recipe: 'cereal'),
@@ -117,6 +117,7 @@ class HomeTabBarView extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => NutriDetails(
+                        name: title,
                         id: id,
                         imageUrl: imageUrl, // Pass the imageUrl here
                       ),

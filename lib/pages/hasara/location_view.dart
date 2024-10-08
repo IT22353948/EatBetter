@@ -270,6 +270,7 @@ class _LocationViewState extends State<LocationView> {
                                                          restaurant['geometry']['location']['lat'],
                                                          restaurant['geometry']['location']['lng']
                                                       ),
+                                                      restaurantName: restaurant['name'] ?? 'Unknown Name', // Pass the restaurant name
                                                     ),
                                                     ),
                                                   );

@@ -6,8 +6,13 @@ import 'package:http/http.dart' as http;
 
 class DirectionView extends StatefulWidget {
   final LatLng destination; // Destination (restaurant) location
+  final String restaurantName; // Add restaurant name parameter
 
-  const DirectionView({required this.destination, super.key});
+
+  const DirectionView({
+    required this.destination,
+    required this.restaurantName,
+    super.key});
 
   @override
   _DirectionViewState createState() => _DirectionViewState();
@@ -118,8 +123,8 @@ class _DirectionViewState extends State<DirectionView> {
         Marker(
           markerId: const MarkerId('restaurant'),
           position: widget.destination,
-          infoWindow: const InfoWindow(
-            title: 'Restaurant',
+          infoWindow: InfoWindow(
+            title: widget.restaurantName,
             snippet: 'Your destination',
           ),
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange), 
@@ -172,7 +177,7 @@ class _DirectionViewState extends State<DirectionView> {
               Polyline(
                 polylineId: const PolylineId('route'),
                 points: _routeCoordinates,
-                color: const Color.fromARGB(255, 108, 113, 118),
+                color: const Color.fromARGB(255, 160, 205, 249),
                 width: 5,
               ),
             };

@@ -3,12 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class PointsPage extends StatefulWidget {
+class PreferencesView extends StatefulWidget {
   @override
-  State<PointsPage> createState() => _PointsPageState();
+  State<PreferencesView> createState() => _PointsPageState();
 }
 
-class _PointsPageState extends State<PointsPage> {
+class _PointsPageState extends State<PreferencesView> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final User? user = Auth().CurrentUser; // Current logged-in user
 

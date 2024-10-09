@@ -64,7 +64,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
                 );
               });
             },
-            selectedItemColor: const Color.fromARGB(248, 246, 106, 46),
+            selectedItemColor:  Color.fromARGB(248, 246, 106, 46),
             unselectedItemColor: const Color.fromARGB(255, 0, 0, 0),
             showUnselectedLabels: true,
             iconSize: 30,

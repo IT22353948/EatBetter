@@ -93,7 +93,7 @@ class _NutriDetailsChartsState extends State<NutriDetailsCharts> {
                     final nutri = widget.response['nutrients'][index];
                     return IndividualNutrientCard(
                       nutrients: nutri['name'],
-                      amount: nutri['amount'],
+                      amount: nutri['amount'].toString(),
                       unit: nutri['unit'],
                       progress: nutri['percentOfDailyNeeds'] / 100,
                       progressColor:
@@ -112,7 +112,7 @@ class _NutriDetailsChartsState extends State<NutriDetailsCharts> {
 
 class IndividualNutrientCard extends StatelessWidget {
   final String nutrients;
-  final double amount;
+  final String amount;
   final String unit;
   final double progress;
   final Color progressColor;
@@ -195,7 +195,7 @@ class IndividualNutrientCard extends StatelessWidget {
                     fit: BoxFit
                         .scaleDown, // Ensure text fits within available space
                     child: Text(
-                      '${amount.toString()}$unit',
+                      '${amount}$unit',
                       style: TextStyle(
                         fontSize: 18,
                         color: progressColor,

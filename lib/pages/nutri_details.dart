@@ -4,14 +4,9 @@ import 'package:vector_math/vector_math_64.dart' as math;
 import 'package:eat_better/services/food_api_service.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:eat_better/pages/nutri_details_charts.dart';
+import 'package:eat_better/pages/nutriProgressCardWidget.dart';
 
 Map<String, dynamic> response = {}; // Nutritional data storage
-Map<String, dynamic> nutrient1 = {}; // Nutritional data storage
-Map<String, dynamic> nutrient2 = {}; // Nutritional data storage
-Map<String, dynamic> nutrient3 = {}; // Nutritional data storage
-Map<String, dynamic> nutrient4 = {}; // Nutritional data storage
-Map<String, dynamic> nutrient5 = {}; // Nutritional data storage
-Map<String, dynamic> nutrient6 = {}; // Nutritional data storage
 
 class NutriDetails extends StatefulWidget {
   final String name;
@@ -35,16 +30,9 @@ class _NutriDetailsState extends State<NutriDetails> {
   void initState() {
     super.initState();
     fetchNutritionData(widget.id);
-
-    print('data1: ${nutrient1}');
-    print('data2: ${nutrient2}');
-    print('data3: ${nutrient3}');
-    print('data4: ${nutrient4}');
-    print('data5: ${nutrient5}');
-    print('data6: ${nutrient6}');
   }
 
-  void fetchNutritionData(int recipeId) async {
+  Future<void> fetchNutritionData(int recipeId) async {
     setState(() {
       _isLoading = true;
     });
@@ -54,12 +42,6 @@ class _NutriDetailsState extends State<NutriDetails> {
     setState(() {
       response = data;
       _isLoading = false;
-      nutrient1 = response['nutrients'][5];
-      nutrient2 = response['nutrients'][7];
-      nutrient3 = response['nutrients'][10];
-      nutrient4 = response['nutrients'][12];
-      nutrient5 = response['nutrients'][17];
-      nutrient6 = response['nutrients'][22];
     });
   }
 
@@ -70,7 +52,6 @@ class _NutriDetailsState extends State<NutriDetails> {
 
     return Scaffold(
       appBar: AppBar(
-        // title: const Text('Nutritional Details'),
         backgroundColor: Color.fromARGB(126, 248, 100, 37),
         leading: IconButton(
           iconSize: 30,
@@ -81,349 +62,228 @@ class _NutriDetailsState extends State<NutriDetails> {
         ),
       ),
       body: Container(
-        padding: const EdgeInsets.all(5),
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color.fromARGB(126, 248, 100, 37),
-              Colors.white,
-            ],
+          padding: const EdgeInsets.all(5),
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color.fromARGB(126, 248, 100, 37),
+                Colors.white,
+              ],
+            ),
           ),
-        ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: ListView(
             children: [
-              CircleAvatar(
-                radius: 100,
-                backgroundImage: NetworkImage(widget.imageUrl),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                'Nutritional Details ${widget.name} of ID: ${widget.id}',
-                style: const TextStyle(fontSize: 24),
-              ),
-              const SizedBox(height: 20),
-
-              // Make the card clickable using InkWell
-              SizedBox(
-                height: h * .3,
-                width: w,
-                child: InkWell(
-                  onTap: () {
-                    // Navigate to another page when clicked
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => NutriDetailsCharts(
-                          name: widget.name,
-                          id: widget.id,
-                          nutri1: nutrient1,
-                          nutri2: nutrient2,
-                          nutri3: nutrient3,
-                          nutri4: nutrient4,
-                          nutri5: nutrient5,
-                          nutri6: nutrient6,
+              Stack(
+                children: [
+                  Container(
+                    height: h,
+                    width: w,
+                    color: const Color.fromARGB(0, 194, 3, 3),
+                  ),
+                  Positioned(
+                    top: 95,
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(45.0),
+                          topRight: Radius.circular(45.0),
+                        ),
+                        color: Colors.white,
+                      ),
+                      height: h,
+                      width: w,
+                    ),
+                  ),
+                  Positioned(
+                    top: 0,
+                    left: w * .18,
+                    child: Hero(
+                      tag: widget.name,
+                      child: Container(
+                        height: 250,
+                        width: 250,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                            image: NetworkImage(widget.imageUrl),
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
-                    );
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.all(10),
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Color.fromARGB(101, 248, 100, 37),
-                      borderRadius: BorderRadius.circular(20),
                     ),
-                    child: _isLoading
-                        ? const Center(
-                            child: SpinKitRing(
-                              color: Colors.orange,
-                              size: 50.0,
-                            ),
-                          )
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              _RadialProgress(
-                                value: double.parse(response['calories']
-                                    .toString()
-                                    .replaceAll('kCal', '')
-                                    .trim()),
-                                width: w * .39,
-                                height: h * .19,
-                                progress: getNormalizedValue(
-                                    double.parse(response['calories']
-                                        .toString()
-                                        .replaceAll('kCal', '')
-                                        .trim()),
-                                    1500),
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  const SizedBox(height: 4),
-                                  _IngredientProgress(
-                                    ingredient: "Protein",
-                                    progress: getNormalizedValue(
-                                        double.parse(response['protein']
-                                            .toString()
-                                            .replaceAll('g', '')
-                                            .trim()),
-                                        50),
-                                    progressColor:
-                                        const Color.fromARGB(255, 0, 255, 8),
-                                    Amount: double.parse(response['protein']
-                                        .toString()
-                                        .replaceAll('g', '')
-                                        .trim()),
-                                    width: w * 0.39,
-                                    MaxDaily: 50,
-                                  ),
-                                  const SizedBox(height: 10),
-                                  _IngredientProgress(
-                                      ingredient: "Carbs",
-                                      progress: getNormalizedValue(
-                                          double.parse(response['carbs']
-                                              .toString()
-                                              .replaceAll('g', '')
-                                              .trim()),
-                                          300),
-                                      progressColor:
-                                          Color.fromARGB(255, 255, 251, 0),
-                                      Amount: double.parse(response['carbs']
-                                          .toString()
-                                          .replaceAll('g', '')
-                                          .trim()),
-                                      width: w * 0.39,
-                                      MaxDaily: 300),
-                                  const SizedBox(height: 10),
-                                  _IngredientProgress(
-                                      ingredient: "Fat",
-                                      progress: getNormalizedValue(
-                                          double.parse(response['fat']
-                                              .toString()
-                                              .replaceAll('g', '')
-                                              .trim()),
-                                          70),
-                                      progressColor:
-                                          Color.fromARGB(255, 255, 0, 0),
-                                      Amount: double.parse(response['fat']
-                                          .toString()
-                                          .replaceAll('g', '')
-                                          .trim()),
-                                      width: w * 0.39,
-                                      MaxDaily: 70),
-                                  const SizedBox(height: 4),
-                                ],
-                              )
-                            ],
-                          ),
                   ),
-                ),
+                  // Add Row below the circle image
+                  Positioned(
+                    top: 255,
+                    left: 20,
+                    right: 20,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // Left-aligned food name
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              widget.name,
+                              style: const TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        // Right-aligned text
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: _isLoading
+                                ? const Text(
+                                    'Loading...',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  )
+                                : Text(
+                                    '${response['weightPerServing']['amount']}${response['weightPerServing']['unit']}\nserving',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                      top: 350,
+                      left: 2,
+                      right: 2,
+                      child: GestureDetector(
+                        onTap: () {
+                          // Navigate to another page when clicked
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => NutriDetailsCharts(
+                                response: response,
+                                name: widget.name,
+                                id: widget.id,
+                              ),
+                            ),
+                          );
+                        },
+                        child: NutriProgressCard(
+                          height: h,
+                          width: w,
+                          data: response,
+                          isLoading: _isLoading,
+                        ),
+                      )),
+                  // Container for the two cards
+                  Positioned(
+                    top: 610,
+                    left: 10,
+                    right: 10,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            child: Card(
+                              elevation: 5,
+                              margin: const EdgeInsets.symmetric(
+                                  vertical: 5, horizontal: 5),
+                              child: Stack(
+                                children: [
+                                  // Image filling the card
+                                  Container(
+                                    height: 120,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      image: const DecorationImage(
+                                        image: AssetImage(
+                                            'assets/images/image.png'),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                  // Overlay text
+                                  Positioned(
+                                    top: 35,
+                                    left: 10,
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10, vertical: 5),
+                                      child: const Text(
+                                        'View Recipe',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 25,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: GestureDetector(
+                            child: Card(
+                              elevation: 5,
+                              margin: const EdgeInsets.symmetric(
+                                  vertical: 5, horizontal: 5),
+                              child: Stack(
+                                children: [
+                                  // Image filling the card
+                                  Container(
+                                    height: 120,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      image: DecorationImage(
+                                        image: AssetImage(
+                                            'assets/images/image_1.png'),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                  // Overlay text
+                                  Positioned(
+                                    top: 35,
+                                    left: 10,
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10, vertical: 5),
+                                      child: const Text(
+                                        'Cap Calories',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 25,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ],
-          ),
-        ),
-      ),
+          )),
     );
   }
-}
-
-class _IngredientProgress extends StatelessWidget {
-  final String ingredient;
-  final double Amount;
-  final double progress, width, MaxDaily;
-  final Color progressColor;
-
-  const _IngredientProgress(
-      {super.key,
-      required this.MaxDaily,
-      required this.ingredient,
-      required this.Amount,
-      required this.progress,
-      required this.width,
-      required this.progressColor});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          ingredient,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w900,
-          ),
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Stack(
-              children: <Widget>[
-                Container(
-                  height: 16,
-                  width: width,
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                    color: Colors.black12,
-                  ),
-                ),
-                Container(
-                  height: 16,
-                  width: width * progress,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                    color: progressColor,
-                  ),
-                )
-              ],
-            ),
-            Text("${Amount.ceil()}g/${MaxDaily.ceil()}g"),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _NutrientInfo extends StatelessWidget {
-  final String nutrient, value;
-  const _NutrientInfo({super.key, required this.nutrient, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Text(
-          nutrient,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(width: 15),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-            foreground: Paint()
-              ..shader = const LinearGradient(
-                colors: [
-                  Color.fromARGB(192, 187, 5, 5), // Start color
-                  Color.fromARGB(255, 255, 102, 0), // End color
-                ],
-              ).createShader(Rect.fromLTWH(0, 0, 100, 50)),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _RadialProgress extends StatelessWidget {
-  final double width, height, progress, value;
-  const _RadialProgress(
-      {super.key,
-      required this.value,
-      required this.width,
-      required this.height,
-      required this.progress});
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: _RadialPainter(
-        progress: progress,
-      ),
-      child: Container(
-        height: height,
-        width: width,
-        child: Center(
-          child: RichText(
-            textAlign: TextAlign.center,
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: value.toString(),
-                  style: TextStyle(
-                    fontSize: 38,
-                    fontWeight: FontWeight.w700,
-                    foreground: Paint()
-                      ..shader = const LinearGradient(
-                        colors: [
-                          Color.fromARGB(192, 187, 5, 5), // Start color
-                          Color.fromARGB(255, 255, 102, 0), // End color
-                        ],
-                      ).createShader(Rect.fromLTWH(0, 0, 100, 50)),
-                  ),
-                ),
-                const TextSpan(text: "\n"),
-                TextSpan(
-                  text: "KCal",
-                  style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.w500,
-                    foreground: Paint()
-                      ..shader = const LinearGradient(
-                        colors: [
-                          Color.fromARGB(192, 187, 5, 5), // Start color
-                          Color.fromARGB(255, 255, 102, 0), // End color
-                        ],
-                      ).createShader(Rect.fromLTWH(0, 0, 100, 50)),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _RadialPainter extends CustomPainter {
-  final double progress;
-
-  const _RadialPainter({required this.progress});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    Paint paint = Paint()
-      ..strokeWidth = 16
-      ..shader = const LinearGradient(
-        colors: [
-          Color.fromARGB(192, 187, 5, 5), // Start color
-          Color.fromARGB(255, 255, 102, 0), // End color
-        ],
-      ).createShader(Rect.fromCircle(
-          center: Offset(size.width / 2, size.height / 2),
-          radius: size.width / 2))
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-
-    Offset center = Offset(size.width / 2, size.height / 2);
-    double relativeProgress = 360 * progress;
-
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: size.width / 2),
-      math.radians(-90),
-      math.radians(-relativeProgress),
-      false,
-      paint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    return true;
-  }
-}
-
-double getNormalizedValue(double value, double maxValue) {
-  return value / maxValue;
 }

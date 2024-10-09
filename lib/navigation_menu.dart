@@ -1,8 +1,8 @@
+import 'package:eat_better/pages/hasara/BannerView.dart';
 import 'package:flutter/material.dart';
 import 'package:eat_better/pages/home_page.dart';
 import 'package:eat_better/pages/food_analysis.dart';
 import 'package:eat_better/pages/recipe_search.dart';
-import 'package:eat_better/pages/hasara/location_view.dart';
 import 'package:eat_better/pages/saved_recipes.dart';
 
 class NavigationMenu extends StatefulWidget {
@@ -21,7 +21,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
     HomePage(),
     RecipeSearch(),
     FoodAnalysis(),
-    LocationView(),
+    BannerView(),
     SavedRecipes(),
   ];
 

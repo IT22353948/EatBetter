@@ -1,8 +1,8 @@
+import 'package:eat_better/pages/hasara/BannerView.dart';
 import 'package:flutter/material.dart';
 import 'package:eat_better/pages/home_page.dart';
 import 'package:eat_better/pages/food_analysis.dart';
 import 'package:eat_better/pages/recipe_search.dart';
-import 'package:eat_better/pages/hasara/location_view.dart';
 import 'package:eat_better/pages/saved_recipes.dart';
 
 class NavigationMenu extends StatefulWidget {
@@ -21,7 +21,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
     HomePage(),
     RecipeSearch(),
     FoodAnalysis(),
-    LocationView(),
+    BannerView(),
     SavedRecipes(),
   ];
 
@@ -29,12 +29,11 @@ class _NavigationMenuState extends State<NavigationMenu> {
     if (_currentIndex != 0) {
       setState(() {
         _currentIndex = 0;
-        _pageController
-            .jumpToPage(0); // Update PageView when back button is pressed
+        _pageController.jumpToPage(0); // Switch to the first page (Menu)
       });
-      return false; // Prevent default back button behavior
+      return false; // Prevent the default back button action
     } else {
-      return true; // Allow the app to exit if already on Menu
+      return true; // Allow the app to exit if already on the first page
     }
   }
 
@@ -44,11 +43,10 @@ class _NavigationMenuState extends State<NavigationMenu> {
       onWillPop: _onPop,
       child: Scaffold(
         body: PageView(
-          controller: _pageController, // Add the PageController
+          controller: _pageController, // Use the PageController
           onPageChanged: (index) {
             setState(() {
-              _currentIndex =
-                  index; // Update the bottom navigation bar when the page changes
+              _currentIndex = index; // Update the BottomNavigationBar index
             });
           },
           children: _pages,
@@ -62,8 +60,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
               setState(() {
                 _currentIndex = index;
                 _pageController.jumpToPage(
-                  // Switch the PageView
-                  index,
+                  index, // Instantly switch to the tapped page
                 );
               });
             },

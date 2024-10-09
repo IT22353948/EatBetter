@@ -2,9 +2,11 @@ import 'dart:convert'; // For decoding the HTTP response
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as location_package;
-import 'package:geocoding/geocoding.dart'; // Import for geocoding
+import 'package:geocoding/geocoding.dart'; 
 import 'package:http/http.dart' as http; // Import for making API requests
-import '../home_page.dart'; // Import your Home page
+import 'package:custom_rating_bar/custom_rating_bar.dart';  //ratings
+import 'package:geolocator/geolocator.dart';
+import 'DirectionView.dart';
 
 class LocationView extends StatefulWidget {
   const LocationView({super.key});
@@ -22,6 +24,8 @@ class _LocationViewState extends State<LocationView> {
   final Set<Marker> _markers = {}; // Markers for map
   static const String _locationText = "Find Your Restaurant";
 
+ //Track the selected restaurant's palce id
+ String? _selectedRestaurantId;
 
   // Google Places API key
   final String _placesApiKey = "AIzaSyCIOwQeu3gc7WmTqb_aqnznqufJalwZ_s4";
@@ -31,7 +35,7 @@ class _LocationViewState extends State<LocationView> {
 
   // State variables for the bottom sheet
   bool _isSheetExpanded = false;
-  double _currentSheetSize = 0.25; // Adjust initial size as needed
+  double _currentSheetSize = 0.25; 
 
 
   @override
@@ -55,9 +59,12 @@ class _LocationViewState extends State<LocationView> {
         children: [
           _currentP == null
               ? const Center(child: Text("Loading...")) // Show loading message
-              : Container(
-                  height: double.infinity,
-                  width: double.infinity,
+               :AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  height: _isSheetExpanded
+                     ? MediaQuery.of(context).size.height *0.25 // Reduce the map height when the bottom sheet is expanded
+                     : MediaQuery.of(context).size.height,
+                     width: double.infinity,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10), // Optional: Rounded corners
                   ),
@@ -115,7 +122,7 @@ class _LocationViewState extends State<LocationView> {
               child: Container(
                 width: 50,
                 height: 50,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.orange,
                   shape: BoxShape.circle,
                 ),
@@ -132,7 +139,7 @@ class _LocationViewState extends State<LocationView> {
           DraggableScrollableSheet(
             initialChildSize: _currentSheetSize,
             minChildSize: 0.25,
-            maxChildSize: 0.35,
+            maxChildSize: 0.5,
             builder: (BuildContext context, ScrollController scrollController) {
               return Container(
                 padding: const EdgeInsets.all(10),
@@ -158,6 +165,7 @@ class _LocationViewState extends State<LocationView> {
                         itemCount: _restaurants.length,
                         itemBuilder: (context, index) {
                           final restaurant = _restaurants[index];
+                          String placeId = restaurant['place_id'];
                           String photoReference = restaurant['photos'] != null
                               ? restaurant['photos'][0]['photo_reference']
                               : ''; // Get photo reference if available
@@ -169,13 +177,20 @@ class _LocationViewState extends State<LocationView> {
                                 '&photoreference=$photoReference'
                                 '&key=$_placesApiKey'
                               : 'https://via.placeholder.com/400'; // Placeholder image if no photo available
-
-                          return Card(
+                            
+                          return GestureDetector(
+                             onTap: () {
+                            setState(() {
+                                 _selectedRestaurantId = placeId;  // Update the selected restaurant's place_id
+                             });
+                           _fetchNearbyRestaurants();  // Rebuild markers to reflect the color change
+                             },
+                          child: Card(
                             margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20), // Rounded corners for the card
                             ),
-                            color: const Color(0xFFF86A2E).withOpacity(0.85), // Orange mix background color
+                            color: Colors.white,
                             child: SizedBox(
                               width: 320,// Card width
                               height: 150, // Card height
@@ -205,32 +220,87 @@ class _LocationViewState extends State<LocationView> {
                                           style: const TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold,
-                                            color: Colors.white, // White text on orange background
+                                            color: Colors.black, // White text on orange background
                                           ),
                                         ),
                                         const SizedBox(height: 5),
-                                        Text(
-                                          'Rating: ${restaurant['rating'] ?? 'No rating'}',
-                                          style: const TextStyle(
-                                            fontSize: 14,
-                                            color: Color.fromARGB(179, 251, 226, 226),
-                                            fontWeight: FontWeight.bold,
-                                          ),
+
+                                        //Display star ratngs using CustomRatingbar
+                                        Row(
+                                            children: [
+                                              RatingBar(
+                                                filledIcon: Icons.star, 
+                                                emptyIcon: Icons.star_border, 
+                                                onRatingChanged: (rating) {
+                                                     // Update the rating state when the user changes it
+                                                      setState(() {
+                                                      restaurant['rating'] = rating;
+                                                     });
+                                                    },
+                                                initialRating: restaurant['rating']?.toDouble() ?? 0.0, 
+                                                maxRating:5, 
+                                                halfFilledIcon: Icons.star_half, 
+                                              ),
+                                              const SizedBox(width:10),
+                                              Text(
+                                              '(${restaurant['user_ratings_total'] ?? '0'})', // Display the number of ratings
+                                              style: const TextStyle(color: Colors.black),
+                                            ),
+                                            ],
                                         ),
-                                        const SizedBox(height: 10),
-                                        Text(
-                                          restaurant['vicinity'] ?? 'No address provided',
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.white54,
+                                        const SizedBox(height: 5),
+                                          Text(
+                                            'Distance: ${restaurant['distance'].toStringAsFixed(2)} km', // Display the distance
+                                            style: const TextStyle(
+                                              fontSize: 15,
+                                              color: Color.fromARGB(137, 10, 9, 9),
+                                            ),
                                           ),
-                                        ),
+                                          const SizedBox(height: 10),
+                                          Align(
+                                                alignment: Alignment.centerRight, // Aligns to the right
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                if(_currentP != null){
+                                                  //Navigate to the dirction view
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(builder: (context) => DirectionView(
+                                                      destination : LatLng(
+                                                         restaurant['geometry']['location']['lat'],
+                                                         restaurant['geometry']['location']['lng']
+                                                      ),
+                                                      restaurantName: restaurant['name'] ?? 'Unknown Name', // Pass the restaurant name
+                                                    ),
+                                                    ),
+                                                  );
+                                                }
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                foregroundColor: Colors
+                                                    .white, backgroundColor: const Color(
+                                                    0xFFF86A2E), // Set the text color to white
+                                              ),
+                                              child:
+                                                  const Text('Get Directions'),
+                                            ),
+                                          ),
+
+                                        // const SizedBox(height: 10),
+                                        // Text(
+                                        //   restaurant['vicinity'] ?? 'No address provided',
+                                        //   style: const TextStyle(
+                                        //     fontSize: 12,
+                                        //     color: Colors.white54,
+                                        //   ),
+                                        // ),
                                       ],
                                     ),
                                   ),
                                 ],
                               ),
                             ),
+                          ),
                           );
                         },
                       ),
@@ -295,7 +365,7 @@ class _LocationViewState extends State<LocationView> {
       await _mapController!.animateCamera(CameraUpdate.newCameraPosition(
         CameraPosition(
           target: position,
-          zoom: 14,
+          zoom: 13,
         ),
       ));
     }
@@ -318,7 +388,7 @@ class _LocationViewState extends State<LocationView> {
               markerId: searchMarkerId,
               icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
               position: _searchedLocation!,
-              infoWindow: InfoWindow(title: "Searched Location"), // Optional: Add an info window for the marker
+              infoWindow: const InfoWindow(title: "Searched Location"), 
             ),
           );
         });
@@ -351,18 +421,45 @@ class _LocationViewState extends State<LocationView> {
               restaurant['geometry']['location']['lat'],
               restaurant['geometry']['location']['lng'],
             );
+            final String placeId = restaurant['place_id'];
+              
+              // Calculate the distance to the restaurant
+            double distanceInMeters = Geolocator.distanceBetween(
+              _currentP!.latitude,
+              _currentP!.longitude,
+              position.latitude,
+            position.longitude,
+          );
+          double distanceInKm = distanceInMeters / 1000; // Convert to kilometers
+          
+          // Store the distance in the restaurant data
+          restaurant['distance'] = distanceInKm;
+
             return Marker(
-              markerId: MarkerId(restaurant['place_id']),
+              markerId: MarkerId(placeId),
               position: position,
-              icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-              infoWindow: InfoWindow(title: restaurant['name']),
-            );
+              icon: BitmapDescriptor.defaultMarkerWithHue(
+                _selectedRestaurantId == placeId
+                 ? BitmapDescriptor.hueYellow// Use a different color for the selected restaurant
+                : BitmapDescriptor.hueRed, // Default color for non-selected restaurants
+              ),
+             infoWindow: InfoWindow(
+            title: restaurant['name'],
+            snippet: 'distance : ${distanceInKm.toStringAsFixed(2)} km', // Add distance to the info window
+            ),
+             );
           }).toSet();
 
           setState(() {
             _restaurants = results; // Update the list of restaurants
+            _markers.clear();
             _markers.addAll(restaurantMarkers);
           });
+
+          //fetch aditional details for each resaturant
+          for (var restaurant in _restaurants) {
+            await _fetchPlaceDetails(restaurant['place_id']);
+          }
         }
       } else {
         print("Failed to fetch nearby restaurants: ${response.body}");
@@ -372,11 +469,43 @@ class _LocationViewState extends State<LocationView> {
     }
   }
 
+  //fetch place details for a specific restaurant using google place details api
+  Future<void> _fetchPlaceDetails(String placeId) async {
+    final String detailsUrl = 'https://maps.googleapis.com/maps/api/place/details/json'
+     '?place_id=$placeId'
+     '&fields=name,formatted_phone_number,opening_hours'
+     '&key=$_placesApiKey';
+
+     try {
+      final response = await http.get(Uri.parse(detailsUrl));
+      if(response.statusCode == 200){
+        final data = json.decode(response.body);
+
+        if(data['status'] == 'OK'){
+          var restaurantDetails = data['result'];
+          setState(() {
+          // Update the restaurant details with the phone number and opening hours
+          for (var restaurant in _restaurants) {
+            if (restaurant['place_id'] == placeId) {
+              restaurant['phone_number'] = restaurantDetails['formatted_phone_number'];
+              restaurant['opening_hours'] = restaurantDetails['opening_hours']?['weekday_text'] ?? [];
+            }
+          }
+        });
+      }
+     } else {
+      print("Failed to fetch restaurant details: ${response.body}");
+     }
+  } catch(e) {
+    print("Error fetching restaurant details: $e");
+  }
+  }
+
   // Toggle the bottom sheet visibility
   void _toggleBottomSheet() {
     setState(() {
       _isSheetExpanded = !_isSheetExpanded;
-      _currentSheetSize = _isSheetExpanded ? 0.35 : 0.25; // Adjust size as needed
+      _currentSheetSize = _isSheetExpanded ? 0.35 : 0.25; 
     });
   }
 }

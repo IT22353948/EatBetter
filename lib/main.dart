@@ -1,5 +1,6 @@
 import 'package:eat_better/authFile/widget_tree.dart';
 import 'package:eat_better/pages/hasara/BannerView.dart';
+import 'package:eat_better/pages/prabashwara/PointsPage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:eat_better/pages/prabashwara/consts.dart';
@@ -42,6 +43,7 @@ void main() async {
         './banner_view' : (context) => const BannerView(),
         '/saved_recipes': (context) => const SavedRecipes(),
         '/image_to_text': (context) => const ImageToText(),
+        '/points_view'  : (context) => PointsPage(),
         '/widget_tree': (context) => const WidgetTree(), // Add WidgetTree route as login
       },
     ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:eat_better/pages/common_tab.dart';
 
 class FoodAnalysis extends StatefulWidget {
   const FoodAnalysis({super.key});
@@ -10,6 +11,8 @@ class FoodAnalysis extends StatefulWidget {
 class _FoodAnalysisState extends State<FoodAnalysis> {
   @override
   Widget build(BuildContext context) {
+    final h = MediaQuery.of(context).size.height;
+    final w = MediaQuery.of(context).size.width;
     return Scaffold(
       // appBar: AppBar(
       //   title: const Text('Food Analysis'),

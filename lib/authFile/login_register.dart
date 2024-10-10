@@ -46,8 +46,8 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _title() {
-    return const Text(
-      'Firebase Auth',
+    return  Text(
+      isLogin ? 'Log in' : 'Register',
       style: TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
@@ -85,7 +85,7 @@ class _LoginPageState extends State<LoginPage> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Text(
-        errorMessage == '' ? '' : 'Humm ? $errorMessage',
+        errorMessage == '' ? '' : ' $errorMessage',
         style: const TextStyle(color: Colors.red, fontSize: 14),
       ),
     );

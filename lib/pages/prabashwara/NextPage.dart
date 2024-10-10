@@ -1,5 +1,5 @@
-import 'package:eat_better/pages/prabashwara/Gemini_suggest.dart';
 import 'package:flutter/material.dart';
+import 'package:eat_better/pages/prabashwara/SuggestionsPage.dart'; // Adjust the path as necessary
 
 class NextPage extends StatelessWidget {
   final String extractedText;
@@ -22,11 +22,9 @@ class NextPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Container with custom width and height
               Container(
-                width:
-                    double.infinity, // Set to take the full width of the screen
-                height: 600, // Set height to 600 pixels
+                width: double.infinity,
+                height: 600,
                 padding: const EdgeInsets.all(16.0),
                 margin: const EdgeInsets.only(bottom: 20.0),
                 decoration: BoxDecoration(
@@ -34,7 +32,6 @@ class NextPage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 child: SingleChildScrollView(
-                  // In case text overflows
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -45,58 +42,50 @@ class NextPage extends StatelessWidget {
                   ),
                 ),
               ),
-              // Buttons below the container
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  // First button with custom size and color
                   ElevatedButton(
                     onPressed: () {
-                      // First button action
+                      // Navigate to SuggestionsPage, passing the extracted text
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const GeminiSuggest()),
+                          builder: (context) => SuggestionsPage(extractedText: extractedText),
+                        ),
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 20.0,
-                          horizontal: 60.0), // Custom button size
-                      backgroundColor: Colors.teal, // Button background color
+                      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 60.0),
+                      backgroundColor: Colors.teal,
                       shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(8.0), // Rounded corners
+                        borderRadius: BorderRadius.circular(8.0),
                       ),
                     ),
                     child: const Text(
                       'Give Suggest',
                       style: TextStyle(
                         fontSize: 18,
-                        color: Colors.white, // Text color
+                        color: Colors.white,
                       ),
                     ),
                   ),
-                  // Second button with custom size and color
                   ElevatedButton(
                     onPressed: () {
-                      // Second button action
+                      // Second button action (to be defined)
                     },
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 20.0,
-                          horizontal: 30.0), // Adjusted button size
-                      backgroundColor: Colors.orange, // Button background color
+                      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 30.0),
+                      backgroundColor: Colors.orange,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                            8.0), // Adjusted border radius
+                        borderRadius: BorderRadius.circular(8.0),
                       ),
                     ),
                     child: const Text(
                       ' Mark ',
                       style: TextStyle(
                         fontSize: 18,
-                        color: Colors.white, // Text color
+                        color: Colors.white,
                       ),
                     ),
                   ),
@@ -109,25 +98,18 @@ class NextPage extends StatelessWidget {
     );
   }
 
-  // Function to process the extracted text and return a list of menu items, ignoring numbers, special characters, and single characters
   List<String> _processExtractedText(String text) {
-    // Split the text into lines
     final lines = text.split('\n');
 
-    // Filter out lines that contain only numbers, special characters, or single characters
     return lines
         .where((line) =>
             line.isNotEmpty &&
-            RegExp(r'[a-zA-Z]').hasMatch(
-                line)) // Check if the line contains any alphabetic characters
-        .map((line) => line.replaceAll(RegExp(r'[^a-zA-Z\s]'),
-            '')) // Remove special characters and numbers
-        .where((line) => line.split(' ').any(
-            (word) => word.length > 1)) // Remove lines with single characters
+            RegExp(r'[a-zA-Z]').hasMatch(line))
+        .map((line) => line.replaceAll(RegExp(r'[^a-zA-Z\s]'), ''))
+        .where((line) => line.split(' ').any((word) => word.length > 1))
         .toList();
   }
 
-  // Function to build a card widget for each menu item
   Widget _buildMenuCard(String item) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),

@@ -17,19 +17,24 @@ class _UserPreferencePageState extends State<UserPreferencePage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // Define the list of preferences
-  final List<String> preferences = [
-    "Rice",
-    "Kottu",
-    "Pizza",
-    "CocaCola",
-    "Food1",
-    "Food2",
-    "Food3",
-    "Food4",
-    "Food5",
-    "Food6",
-    "Food7",
-    "Food8",
+  final List<String> preferences = [   //Chicken, Beef, Pork, Fish, Tofu, Eggs, Plant-Based
+    "Italian",
+    "Chinese",
+    "Indian",
+    "Mexican",
+    "Japanese",
+    "Thai",
+    "Mediterranean",
+    "Vegetarian",
+    "Gluten-Free",
+    "Halal",
+    "Kosher",
+    "Nut-Free",
+    "Chicken",
+    "Beef",
+    "Pork",
+    "Eggs",
+    "Plant-Based",
   ];
 
   // Track selected preferences
@@ -115,8 +120,8 @@ class _UserPreferencePageState extends State<UserPreferencePage> {
         mainAxisSize: MainAxisSize.min,
         children: [
    
-          const Text('Update your preferences:'),
-          const SizedBox(height: 20),
+          const Text('Choose your preferences:'),
+          //const SizedBox(height: 20),
           Expanded(child: _buildPreferenceButtons()),
         ],
       );

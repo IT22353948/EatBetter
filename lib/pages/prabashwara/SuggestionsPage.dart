@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_gemini/flutter_gemini.dart'; // For Gemini AI
 import 'package:dash_chat_2/dash_chat_2.dart'; // For displaying suggestions as chat messages
 
 class SuggestionsPage extends StatefulWidget {
@@ -17,10 +16,9 @@ class _SuggestionsPageState extends State<SuggestionsPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final User? user = FirebaseAuth.instance.currentUser;
   List<String> _userPreferences = []; // User preferences
-  List<ChatMessage> messages = []; // Gemini suggestions as chat messages
+  List<ChatMessage> messages = []; // Suggestions as chat messages
 
   final ChatUser geminiUser = ChatUser(id: "1", firstName: "Gemini");
-  Gemini gemini = Gemini.instance;
 
   @override
   void initState() {
@@ -63,26 +61,28 @@ class _SuggestionsPageState extends State<SuggestionsPage> {
     List<String> extractedLines = widget.extractedText.split('\n');
 
     // Check each line for keyword matches and collect suggestions
-    List<String> linesToSendToGemini = []; // Store lines to send to Gemini
-
     for (String line in extractedLines) {
       // Remove lines with special characters
       if (_isLineValid(line)) {
-        List<String> matchedKeywords = _getMatchedKeywords(line);
-        print("Line: '$line' - Matched Keywords: $matchedKeywords"); // Debugging: print matched keywords
-
-        if (matchedKeywords.isNotEmpty) {
-          // If line has matched preferences, add it to the lines to send to Gemini
-          linesToSendToGemini.add(line);
+        // Check if the line matches user preferences
+        if (_doesLineMatchUserPreferences(line)) {
+          print("Line: '$line' matches user preferences."); // Debugging: print matched lines
+          messages.add(ChatMessage(
+            user: geminiUser,
+            createdAt: DateTime.now(),
+            text: line, // Add matched line as a suggestion
+          ));
         }
       }
     }
 
-    // If there are valid lines to send to Gemini, request suggestions
-    if (linesToSendToGemini.isNotEmpty) {
-      await _getGeminiSuggestions(linesToSendToGemini);
+    // Update the UI if there are suggestions
+    if (messages.isNotEmpty) {
+      setState(() {
+        messages.sort((a, b) => a.createdAt.compareTo(b.createdAt)); // Sort messages by time
+      });
     } else {
-      print("No valid lines found for Gemini. No requests sent."); // Indicate no lines for Gemini
+      print("No valid lines found."); // Indicate no lines found
     }
   }
 
@@ -92,31 +92,14 @@ class _SuggestionsPageState extends State<SuggestionsPage> {
     return !specialCharacters.hasMatch(line); // Return true if line has no special characters
   }
 
-  List<String> _getMatchedKeywords(String line) {
-    List<String> matchedKeywords = [];
+  bool _doesLineMatchUserPreferences(String line) {
     String upperCaseLine = line.toUpperCase(); // Convert line to upper case
+    // Check if any preference matches the line
     for (String preference in _userPreferences) {
       if (upperCaseLine.contains(preference)) {
-        matchedKeywords.add(preference);
+        return true; // Return true if a match is found
       }
     }
-    return matchedKeywords; // Return all matched keywords in the line
-  }
-
-  Future<void> _getGeminiSuggestions(List<String> linesToSend) async {
-    for (String line in linesToSend) {
-      print("Requesting suggestion for line: $line"); // Debugging: print the line
-
-      gemini.streamGenerateContent(line).listen((event) {
-        String? suggestion = event.content?.parts?.fold("", (previous, current) => "$previous ${current.text}") ?? "";
-        
-        print("Gemini Suggestion: $suggestion"); // Debugging: print the suggestion
-
-        ChatMessage newMessage = ChatMessage(user: geminiUser, createdAt: DateTime.now(), text: suggestion);
-        setState(() {
-          messages.add(newMessage); // Add Gemini's suggestion to the chat
-        });
-      });
-    }
+    return false; // No matches found
   }
 }

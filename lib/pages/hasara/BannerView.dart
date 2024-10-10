@@ -5,9 +5,9 @@ class BannerView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Calculate the height as 65% of the screen height
+    // Calculate the height as 70% of the screen height
     final screenHeight = MediaQuery.of(context).size.height;
-    final containerHeight = screenHeight * 0.70; // 65% of the screen height
+    final containerHeight = screenHeight * 0.70; // 70% of the screen height
 
     return Container(
       height: screenHeight, // Full height for the gradient background
@@ -16,17 +16,17 @@ class BannerView extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomCenter,
           colors: [
-            Color.fromARGB(126, 248, 100, 37), // Orange
-            Colors.white, // White
+            Color.fromARGB(126, 248, 100, 37),
+            Colors.white,
           ],
         ),
       ),
       child: Column(
         children: [
           Container(
-            height: containerHeight, // Set the height of the inner white container
-            margin: const EdgeInsets.all(16.0), // Add margin around the container
-            padding: const EdgeInsets.all(16.0), // Add padding inside the container
+            height: containerHeight,
+            margin: const EdgeInsets.only(top: 40, left: 16, right: 16, bottom: 10),
+            padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
               color: Colors.white, // Set the background color to white
               borderRadius: BorderRadius.circular(16), // Optional: Add some border radius
@@ -39,25 +39,40 @@ class BannerView extends StatelessWidget {
                 ),
               ],
             ),
-            child: Center(
+            child: const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
+                  Text(
                     "Welcome to Restaurant Finder!",
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pushNamed('/location_view'); // Navigate to MapView
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFF86A2E),
-                    ),
-                    child: const Text("Show Map"),
-                  ),
                 ],
+              ),
+            ),
+          ),
+          const Spacer(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed('/location_view'); 
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 249, 93, 26),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                minimumSize: const Size(300, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8), 
+                ), 
+              ),
+              child: const Text(
+                "View Map",
+                style: TextStyle(
+                  color: Colors.white, // Set text color to white
+                  fontSize: 18, // Optional: Adjust font size if needed
+                  fontWeight: FontWeight.bold, // Optional: Make the text bold
+                ),
               ),
             ),
           ),

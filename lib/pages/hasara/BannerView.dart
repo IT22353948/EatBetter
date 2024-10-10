@@ -5,12 +5,12 @@ class BannerView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Calculate the height as 25% of the screen height
+    // Calculate the height as 65% of the screen height
     final screenHeight = MediaQuery.of(context).size.height;
-    final containerHeight = screenHeight * 0.25; // 25% of the screen height
+    final containerHeight = screenHeight * 0.70; // 65% of the screen height
 
     return Container(
-      height: containerHeight, // Set the height of the container
+      height: screenHeight, // Full height for the gradient background
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -21,26 +21,47 @@ class BannerView extends StatelessWidget {
           ],
         ),
       ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              "Welcome to Restaurant Finder!",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+      child: Column(
+        children: [
+          Container(
+            height: containerHeight, // Set the height of the inner white container
+            margin: const EdgeInsets.all(16.0), // Add margin around the container
+            padding: const EdgeInsets.all(16.0), // Add padding inside the container
+            decoration: BoxDecoration(
+              color: Colors.white, // Set the background color to white
+              borderRadius: BorderRadius.circular(16), // Optional: Add some border radius
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 12, // Increased blur radius for a softer shadow
+                  offset: Offset(0, 4), // Shadow offset
+                  spreadRadius: 2, // Add spread radius for larger shadow effect
+                ),
+              ],
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed('/location_view'); // Navigate to MapView
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFF86A2E),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Welcome to Restaurant Finder!",
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pushNamed('/location_view'); // Navigate to MapView
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFF86A2E),
+                    ),
+                    child: const Text("Show Map"),
+                  ),
+                ],
               ),
-              child: const Text("Show Map"),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

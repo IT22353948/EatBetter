@@ -35,7 +35,7 @@ class _UserPreferencePageState extends State<UserPreferencePage> {
     "Pork",
     "Eggs",
     "Plant-Based",
-    "Tofu",
+    "Curry",
   ];
 
   // Track selected preferences

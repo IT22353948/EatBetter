@@ -35,6 +35,7 @@ class _UserPreferencePageState extends State<UserPreferencePage> {
     "Pork",
     "Eggs",
     "Plant-Based",
+    "Tofu",
   ];
 
   // Track selected preferences
@@ -110,8 +111,8 @@ class _UserPreferencePageState extends State<UserPreferencePage> {
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('Select your preferences below:'),
-          const SizedBox(height: 20),
+          // const Text('Select your preferences below:'),
+          // const SizedBox(height: 20),
           Expanded(child: _buildPreferenceButtons()),
         ],
       );

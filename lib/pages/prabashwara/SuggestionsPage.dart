@@ -1,7 +1,8 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fl_chart/fl_chart.dart'; // Import for pie chart
+import 'package:fl_chart/fl_chart.dart';
 
 class SuggestionsPage extends StatefulWidget {
   final String extractedText; // Receive extracted text from NextPage
@@ -41,90 +42,156 @@ class _SuggestionsPageState extends State<SuggestionsPage> {
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
-          // First Card for Pie Chart
-          Card(
-            elevation: 4,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    'User Preferences Distribution',
+          // Row for Pie Chart and Legend
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // First Card for Pie Chart
+              Expanded(
+                child: Card(
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          'User Preferences Distribution',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 200, // Set the height for the pie chart
+                        child: _buildPieChart(),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 20),
+              // Second card for color explanation (legend)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Legend:',
                     style: TextStyle(
-                      fontSize: 18,
                       fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Container(
+                        width: 20,
+                        height: 20,
+                        color: Colors.blue,
+                      ),
+                      const SizedBox(width: 10),
+                      Text('All Preferences'),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Container(
+                        width: 20,
+                        height: 20,
+                        color: Colors.green,
+                      ),
+                      const SizedBox(width: 10),
+                      Text('Matched Preferences'),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          // Row for two flexed-width cards
+          Expanded(
+            child: Row(
+              children: [
+                // Second Card for Matched Preferences
+                Expanded(
+                  child: Card(
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Matched Preferences',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          // Scrollable content with a flexed height
+                          Expanded(
+                            child: SingleChildScrollView(
+                              child: _matchedPreferences.isNotEmpty
+                                  ? Text(
+                                      _matchedPreferences.join(' '),
+                                      style: const TextStyle(fontSize: 16),
+                                    )
+                                  : const Text('No Preferences Matched'),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 200, // Set the height for the pie chart
-                  child: _buildPieChart(),
+                const SizedBox(width: 20),
+                // Third Card for Best Suggestions
+                Expanded(
+                  child: Card(
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Find our best suggestions',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          // Scrollable content with a flexed height
+                          Expanded(
+                            child: SingleChildScrollView(
+                              child: _linesWithMultiplePreferences.isNotEmpty
+                                  ? Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: _buildHighlightedLines(),
+                                    )
+                                  : const Text('No lines found with more than two preferences.'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               ],
-            ),
-          ),
-          const SizedBox(height: 20),
-          // Second Card for Matched Preferences
-          Card(
-            elevation: 4,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Matched Preferences',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  _matchedPreferences.isNotEmpty
-                      ? Text(
-                          _matchedPreferences.join(', '),
-                          style: const TextStyle(fontSize: 16),
-                        )
-                      : const Text('No Preferences Matched'),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
-          // New Card for Best Suggestions
-          Card(
-            elevation: 4,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 20),
-                  Text(
-                    'Find our best suggestions',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  _linesWithMultiplePreferences.isNotEmpty
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: _buildHighlightedLines(),
-                        )
-                      : const Text('No lines found with more than two preferences.'),
-                ],
-              ),
             ),
           ),
         ],
@@ -135,7 +202,7 @@ class _SuggestionsPageState extends State<SuggestionsPage> {
   List<Widget> _buildHighlightedLines() {
     List<Widget> lineWidgets = [];
     int maxCount = _linesWithMultiplePreferences.map((e) => e.values.first).reduce((a, b) => a > b ? a : b);
-    
+
     // Find the first line with the highest count for highlighting
     for (int i = 0; i < _linesWithMultiplePreferences.length; i++) {
       var lineData = _linesWithMultiplePreferences[i];
@@ -169,6 +236,26 @@ class _SuggestionsPageState extends State<SuggestionsPage> {
         borderData: FlBorderData(show: false),
         centerSpaceRadius: 40,
         sectionsSpace: 2,
+        pieTouchData: PieTouchData(
+          touchCallback: (FlTouchEvent event, pieTouchResponse) {
+            if (event is FlTapDownEvent && pieTouchResponse != null && pieTouchResponse is! PointerExitEvent) {
+              final index = pieTouchResponse.touchedSection!.touchedSectionIndex;
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text(data[index].title),
+                  content: Text('Count: ${data[index].value.toInt()}'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('Close'),
+                    ),
+                  ],
+                ),
+              );
+            }
+          },
+        ),
       ),
     );
   }
@@ -187,7 +274,7 @@ class _SuggestionsPageState extends State<SuggestionsPage> {
       final isMatched = _matchedPreferences.contains(preference);
       sections.add(PieChartSectionData(
         value: count.toDouble(),
-        title: preference,
+        title: '',
         color: isMatched ? Colors.green : Colors.blue,
         titleStyle: TextStyle(
           fontWeight: FontWeight.bold,
@@ -215,50 +302,38 @@ class _SuggestionsPageState extends State<SuggestionsPage> {
       if (_isLineValid(line)) {
         // Check if the line matches user preferences
         if (_doesLineMatchUserPreferences(line)) {
-          _matchedPreferences.add(line.toUpperCase()); // Store matched preferences
-        }
-        
-        // Check if the line contains more than two preferences
-        int matchedCount = _countMatchedPreferencesInLine(line);
-        if (matchedCount >= 2) {
-          _linesWithMultiplePreferences.add({line: matchedCount}); // Store lines with their preference counts
+          _matchedPreferences.add(line);
         }
       }
     }
 
-    // Sort lines with multiple preferences based on the count
-    _linesWithMultiplePreferences.sort((a, b) => b.values.first.compareTo(a.values.first));
-
-    // Update the UI if there are matched preferences
-    setState(() {});
+    setState(() {
+      _linesWithMultiplePreferences.sort((a, b) => b.values.first.compareTo(a.values.first)); // Sort by count descending
+    });
   }
 
   bool _isLineValid(String line) {
-    // Check for special characters using a regex
-    final RegExp specialCharacters = RegExp(r'[^a-zA-Z0-9\s]');
-    return !specialCharacters.hasMatch(line); // Return true if line has no special characters
+    // Check if a line contains special characters or unwanted patterns
+    RegExp specialCharPattern = RegExp(r'[^\w\s]'); // Pattern for non-word, non-space characters
+    return !specialCharPattern.hasMatch(line);
   }
 
   bool _doesLineMatchUserPreferences(String line) {
-    String upperCaseLine = line.toUpperCase(); // Convert line to upper case
-    // Check if any preference matches the line
-    for (String preference in _userPreferences) {
-      if (upperCaseLine.contains(preference)) {
-        return true; // Return true if a match is found
-      }
-    }
-    return false; // No matches found
-  }
+    int matchCount = 0;
 
-  int _countMatchedPreferencesInLine(String line) {
-    int count = 0;
-    String upperCaseLine = line.toUpperCase(); // Convert line to upper case
-    // Count how many preferences are in the line
+    // Compare each word in the line with the user's preferences
+    List<String> wordsInLine = line.toUpperCase().split(' ');
     for (String preference in _userPreferences) {
-      if (upperCaseLine.contains(preference)) {
-        count++;
+      if (wordsInLine.contains(preference)) {
+        matchCount++;
       }
     }
-    return count; // Return the count of matched preferences
+
+    if (matchCount >= 2) {
+      // Add the line to _linesWithMultiplePreferences if it has at least 2 preference matches
+      _linesWithMultiplePreferences.add({line: matchCount});
+    }
+
+    return matchCount > 0; // Consider a line matched if at least one preference is found
   }
 }

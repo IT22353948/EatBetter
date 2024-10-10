@@ -1,4 +1,6 @@
 import 'package:eat_better/authFile/widget_tree.dart';
+import 'package:eat_better/pages/hasara/BannerView.dart';
+import 'package:eat_better/pages/prabashwara/PreferencesView.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:eat_better/pages/prabashwara/consts.dart';
@@ -38,8 +40,10 @@ void main() async {
         '/recipe_search': (context) => const RecipeSearch(),
         '/food_analysis': (context) => const FoodAnalysis(),
         '/location_view': (context) => const LocationView(),
+        './banner_view' : (context) => const BannerView(),
         '/saved_recipes': (context) => const SavedRecipes(),
         '/image_to_text': (context) => const ImageToText(),
+        '/preferences_view': (context) =>  PreferencesView(),
         '/widget_tree': (context) => const WidgetTree(), // Add WidgetTree route as login
       },
     ),

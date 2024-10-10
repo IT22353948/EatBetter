@@ -1,6 +1,7 @@
 import 'package:eat_better/authFile/auth.dart';
 import 'package:eat_better/authFile/login_register.dart';
 import 'package:eat_better/authFile/widget_tree.dart';
+import 'package:eat_better/pages/prabashwara/PreferencesView.dart';
 import 'package:eat_better/pages/prabashwara/Preferences/preference_page.dart';
 import 'package:flutter/material.dart';
 import 'prabashwara/Image_To_Text.dart';
@@ -87,10 +88,10 @@ class HomePage extends StatelessWidget {
             ),
             _buildNavigationCard(
               context,
-              'Favorites',
+              'show perferences ',
               'View your favorite dishes',
               Icons.favorite,
-              Container(), // Replace with the actual Favorites screen
+              PreferencesView(), // Replace with the actual Favorites screen
               Colors.pinkAccent, // Icon color
               Color(0xFF27AE60), // Card border color
             ),

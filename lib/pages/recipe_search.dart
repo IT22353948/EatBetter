@@ -1,4 +1,6 @@
+import 'package:eat_better/services/food_api_service.dart';
 import 'package:flutter/material.dart';
+import 'package:eat_better/pages/widgets/recipe_card.dart';
 
 class RecipeSearch extends StatefulWidget {
   const RecipeSearch({super.key});
@@ -8,15 +10,40 @@ class RecipeSearch extends StatefulWidget {
 }
 
 class _RecipeSearchState extends State<RecipeSearch> {
+  List<Map<String, dynamic>> recipes = [];
+  bool isLoading = true;
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _searchRecipes('spaghetti'); // Default search query
+  }
+
+  Future<void> _searchRecipes(String query) async {
+    setState(() {
+      isLoading = true; // Show loading while fetching
+    });
+    recipes = await FoodService.getRecipeForCommons(query);
+    setState(() {
+      isLoading = false; // Hide loading after fetch
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('Food Analysis'),
-      //   backgroundColor: const Color.fromARGB(255, 150, 22, 0),
-      // ),
+      appBar: AppBar(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Icon(Icons.restaurant_menu),
+            SizedBox(width: 10),
+            Text('Recipe Search'),
+          ],
+        ),
+      ),
       body: Container(
-        // Apply gradient background
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
@@ -27,16 +54,46 @@ class _RecipeSearchState extends State<RecipeSearch> {
             ],
           ),
         ),
-        child: const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const <Widget>[
-              Text(
-                'Recipe Search',
-                style: TextStyle(fontSize: 24),
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: 'Search for recipes...',
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.search),
+                    onPressed: () {
+                      _searchRecipes(_searchController
+                          .text); // Search when pressing the icon
+                    },
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                ),
+                onSubmitted: (query) {
+                  _searchRecipes(query); // Search when pressing "Enter"
+                },
               ),
-            ],
-          ),
+            ),
+            isLoading
+                ? const CircularProgressIndicator()
+                : Expanded(
+                    child: ListView.builder(
+                      itemCount: recipes.length,
+                      itemBuilder: (context, index) {
+                        return RecipeCard(
+                          title: recipes[index]['title'],
+                          cookTime: '30 mins',
+                          rating: '4.5',
+                          thumbnailUrl: recipes[index]['image'],
+                        );
+                      },
+                    ),
+                  ),
+          ],
         ),
       ),
     );

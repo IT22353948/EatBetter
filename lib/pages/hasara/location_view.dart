@@ -79,7 +79,7 @@ class _LocationViewState extends State<LocationView> {
                     },
                     initialCameraPosition: CameraPosition(
                       target: _currentP!,
-                      zoom: 13,
+                      zoom: 10,
                     ),
                     markers: _markers, // Set all markers, including restaurants
                   ),
@@ -388,7 +388,7 @@ class _LocationViewState extends State<LocationView> {
       await _mapController!.animateCamera(CameraUpdate.newCameraPosition(
         CameraPosition(
           target: position,
-          zoom: 12,
+          zoom: 13,
         ),
       ));
     }

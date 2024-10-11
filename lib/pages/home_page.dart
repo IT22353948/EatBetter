@@ -50,77 +50,196 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color.fromARGB(126, 248, 100, 37), // Orange
-              Colors.white, // White
-            ],
-          ),
-        ),
-        padding: const EdgeInsets.all(16.0),
-        child: GridView.count(
-          crossAxisCount: 2,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-          childAspectRatio: 0.75, // Adjust aspect ratio for card size
+      body: SingleChildScrollView(
+        child: Column(
           children: [
-            _buildNavigationCard(
-              context,
-              'Text Scanner',
-              'Scan and extract text from images',
-              Icons.camera_alt,
-              ImageToText(),
-              Colors.teal, // Icon color
-              Color(0xFFF86A2E), // Card border color
+            // Swappable View (showing 2 cards per page) with added margin
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0), // Margin for the swap view container
+              child: SizedBox(
+                height: 250, // Adjust height for the cards
+                child: PageView(
+                  children: [
+                    Container(
+                      color: const Color.fromARGB(255, 236, 238, 235), // Background color for row 1
+                      child: Row(
+                        children: [
+                          Expanded(child: _buildNavigationCard(
+                            context,
+                            'Text Scanner',
+                            'Scan and extract text from images',
+                            Icons.text_fields, // Updated icon
+                            ImageToText(),
+                            Colors.teal,
+                            Color(0xFFF86A2E), // Border color
+                            Colors.white, // Card background color
+                          )),
+                          Expanded(child: _buildNavigationCard(
+                            context,
+                            'Preferences',
+                            'Explore and discover new recipes',
+                            Icons.favorite, // Updated icon
+                            UserPreferencePage(),
+                            Colors.deepOrange,
+                            Color(0xFF3498db), // Border color
+                            Colors.white, // Card background color
+                          )),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      color: const Color.fromARGB(255, 234, 236, 237), // Background color for row 2
+                      child: Row(
+                        children: [
+                          Expanded(child: _buildNavigationCard(
+                            context,
+                            'Recipe',
+                            'Find Recipies',
+                            Icons.receipt, // Updated icon
+                            const SuggestionsPage(extractedText: ''),
+                            Colors.pinkAccent,
+                            Color(0xFF27AE60), // Border color
+                            Colors.white, // Card background color
+                          )),
+                          Expanded(child: _buildNavigationCard(
+                            context,
+                            'Map',
+                            'Find Your restaurants',
+                            Icons.map, // Updated icon
+                            Container(),
+                            Colors.grey,
+                            Color(0xFF8E44AD), // Border color
+                            Colors.white, // Card background color
+                          )),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      color: const Color.fromARGB(255, 241, 240, 240), // Background color for row 3
+                      child: Row(
+                        children: [
+                          Expanded(child: _buildNavigationCard(
+                            context,
+                            'Food Analysis',
+                            'Analyze the nutritional value of food',
+                            Icons.analytics, // Existing icon
+                            FoodAnalysis(),
+                            Colors.blue,
+                            Color(0xFFE67E22), // Border color
+                            Colors.white, // Card background color
+                          )),
+                          Expanded(child: _buildNavigationCard(
+                            context,
+                            'Sample Card',
+                            'Lorem ipsum',
+                            Icons.help_outline, // Updated icon
+                            FoodAnalysis(),
+                            Colors.blue,
+                            Color(0xFFE67E22), // Border color
+                            Colors.white, // Card background color
+                          )),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            _buildNavigationCard(
-              context,
-              'Preferences',
-              'Explore and discover new recipes',
-              Icons.abc_sharp,
-              UserPreferencePage(), // Replace with the actual Preferences screen
-              Colors.deepOrange, // Icon color
-              Color(0xFF3498db), // Card border color
+
+            // Image container displaying the personalized suggestions feature
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: Container(
+                height: 150,
+                margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF90CAF9), // Creative background color
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Icon(
+                        Icons.lightbulb_outline, // Suitable icon
+                        size: 40, // Icon size
+                        color: Colors.orange, // Icon color
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Personalized Suggestions',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8), // Space between title and description
+                            Text(
+                              'Get recommendations based on your preferences, helping you discover new foods and recipes you’ll love.',
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            _buildNavigationCard(
-              context,
-              'Show Preferences',
-              'View your favorite dishes',
-              Icons.favorite,
-              const SuggestionsPage(extractedText: ''), // Replace with the actual Favorites screen
-              Colors.pinkAccent, // Icon color
-              Color(0xFF27AE60), // Card border color
-            ),
-            _buildNavigationCard(
-              context,
-              'Settings',
-              'Adjust your app settings',
-              Icons.settings,
-              Container(), // Replace with the actual Settings screen
-              Colors.grey, // Icon color
-              Color(0xFF8E44AD), // Card border color
-            ),
-            _buildNavigationCard(
-              context,
-              'Food Analysis',
-              'Analyze the nutritional value of food',
-              Icons.analytics_sharp,
-              FoodAnalysis(), // Replace with the actual Food Analysis screen
-              Colors.blue, // Icon color
-              Color(0xFFE67E22), // Card border color
-            ),
-            _buildNavigationCard(
-              context,
-              'Sample Card',
-              'Lorem ipsum',
-              Icons.access_time_sharp,
-              FoodAnalysis(), // Replace with the actual Food Analysis screen
-              Colors.blue, // Icon color
-              Color(0xFFE67E22), // Card border color
+
+            // New Image container displaying the food analysis feature
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: Container(
+                height: 150,
+                margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFCC80), // Creative background color
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Icon(
+                        Icons.food_bank, // Suitable icon for food analysis
+                        size: 40, // Icon size
+                        color: Colors.blue, // Icon color
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Food Analysis',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8), // Space between title and description
+                            Text(
+                              'Analyze the calories and nutritional values of the food you consume for a healthier lifestyle.',
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
@@ -128,6 +247,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
+  // Card builder function
   Widget _buildNavigationCard(
     BuildContext context,
     String title,
@@ -136,13 +256,14 @@ class HomePage extends StatelessWidget {
     Widget destination,
     Color iconColor,
     Color borderColor,
+    Color backgroundColor, // Background color for the card
   ) {
     return Card(
       shape: RoundedRectangleBorder(
         side: BorderSide(color: borderColor, width: 2), // Custom card border color
         borderRadius: BorderRadius.circular(12.0), // Slightly rounded corners
       ),
-      elevation: 8, // Increased elevation for better shadow
+      elevation: 8, // Card shadow
       child: InkWell(
         borderRadius: BorderRadius.circular(12.0), // Matching border radius
         onTap: () {
@@ -151,34 +272,38 @@ class HomePage extends StatelessWidget {
             MaterialPageRoute(builder: (context) => destination),
           );
         },
-        child: Padding(
-          padding: const EdgeInsets.all(16.0), // Added padding inside card
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                size: 60, // Slightly larger icon
-                color: iconColor, // Custom icon color
-              ),
-              const SizedBox(height: 12), // Increased spacing
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 20, // Larger title text
-                  fontWeight: FontWeight.bold,
+        child: Container(
+          color: backgroundColor, // Set the background color for the card
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  icon,
+                  size: 50, // Icon size
+                  color: iconColor, // Icon color
                 ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                subtitle,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 16, // Larger subtitle text
-                  color: Colors.grey,
+                const SizedBox(height: 10), // Space between icon and title
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 18, // Title size
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black, // Make the text stand out on the color
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 5), // Space between title and subtitle
+                Text(
+                  subtitle,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 14, // Subtitle size
+                    color: Colors.black54, // Subtitle text color for contrast
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

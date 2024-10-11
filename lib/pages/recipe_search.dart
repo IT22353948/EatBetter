@@ -1,6 +1,7 @@
 import 'package:eat_better/services/food_api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:eat_better/pages/widgets/recipe_card.dart';
+import 'package:eat_better/pages/recipe_in_detail.dart'; // Import the new screen
 
 class RecipeSearch extends StatefulWidget {
   const RecipeSearch({super.key});
@@ -65,8 +66,7 @@ class _RecipeSearchState extends State<RecipeSearch> {
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.search),
                     onPressed: () {
-                      _searchRecipes(_searchController
-                          .text); // Search when pressing the icon
+                      _searchRecipes(_searchController.text);
                     },
                   ),
                   border: OutlineInputBorder(
@@ -74,7 +74,7 @@ class _RecipeSearchState extends State<RecipeSearch> {
                   ),
                 ),
                 onSubmitted: (query) {
-                  _searchRecipes(query); // Search when pressing "Enter"
+                  _searchRecipes(query);
                 },
               ),
             ),
@@ -84,11 +84,33 @@ class _RecipeSearchState extends State<RecipeSearch> {
                     child: ListView.builder(
                       itemCount: recipes.length,
                       itemBuilder: (context, index) {
-                        return RecipeCard(
-                          title: recipes[index]['title'],
-                          cookTime: '30 mins',
-                          rating: '4.5',
-                          thumbnailUrl: recipes[index]['image'],
+                        return InkWell(
+                          onTap: () {
+                            // Navigate to RecipeDetailScreen and pass the recipe ID or other data
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => RecipeDetail(
+                                  // recipe: {
+                                  //   'id': '1',
+                                  //   'title': recipes[index]['title'],
+                                  //   'cookTime': '20 mins',
+                                  //   'rating': '4.8',
+                                  //   'image': recipes[index]['image'],
+                                  // },
+                                  recipeId: recipes[index]['id'],
+                                  // recipeId: recipes[index],
+                                  //     ['id'], // Pass the recipe ID
+                                ),
+                              ),
+                            );
+                          },
+                          child: RecipeCard(
+                            title: recipes[index]['title'],
+                            cookTime: '30 mins',
+                            rating: '4.5',
+                            thumbnailUrl: recipes[index]['image'],
+                          ),
                         );
                       },
                     ),

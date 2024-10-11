@@ -5,7 +5,7 @@ import 'package:flutter_gemini/flutter_gemini.dart';
 
 
 class GeminiSuggest extends StatefulWidget {
-  const GeminiSuggest ({super.key});
+  const GeminiSuggest ({super.key, required List<String> userPreferences});
 
   @override
   State<GeminiSuggest> createState() => _GeminiSuggestState();

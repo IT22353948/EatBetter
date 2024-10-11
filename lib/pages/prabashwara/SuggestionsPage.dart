@@ -183,7 +183,7 @@ class _SuggestionsPageState extends State<SuggestionsPage> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: _buildHighlightedLines(),
                                     )
-                                  : const Text('No lines found with more than two preferences.'),
+                                  : const Text('No preferences founded.'),
                             ),
                           ),
                         ],
@@ -263,6 +263,8 @@ class _SuggestionsPageState extends State<SuggestionsPage> {
   List<PieChartSectionData> _preparePieChartData() {
     List<PieChartSectionData> sections = [];
     Map<String, int> preferencesCount = {};
+    print("Matched Preferences: ${_matchedPreferences.join(', ')}"); // Debugging: print user preferences
+
 
     // Count the occurrences of each preference
     for (String preference in _userPreferences) {
@@ -291,8 +293,7 @@ class _SuggestionsPageState extends State<SuggestionsPage> {
     String trimmedEmail = (user?.email ?? "User email").split('@').first;
     DocumentSnapshot doc = await _firestore.collection('users').doc(trimmedEmail).get();
     _userPreferences = List<String>.from(doc['preferences'] ?? []).map((pref) => pref.toUpperCase()).toList(); // Convert preferences to upper case
-    print("User Preferences: $_userPreferences"); // Debugging: print user preferences
-
+    
     // Extract lines from the received text
     List<String> extractedLines = widget.extractedText.split('\n');
 

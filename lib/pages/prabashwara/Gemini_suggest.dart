@@ -25,7 +25,7 @@ class _GeminiSuggestState extends State<GeminiSuggest> {
   final ChatUser geminiUser = ChatUser(
     id: "1",
     firstName: "Gemini",
-    profileImage: "https://www.example.com/profile_image.png", // Use a valid image URL
+    profileImage: "https://www.example.com/profile_image.png",
   );
 
   List<ChatMessage> messages = [];
@@ -60,6 +60,8 @@ class _GeminiSuggestState extends State<GeminiSuggest> {
             currentUser: currentUser,
             onSend: onSend,
             messages: messages,
+            // You can customize the message display by modifying messages in onSend
+            // or directly in the list here as needed.
           ),
         ),
         buildSmartReplyButton(),
@@ -81,7 +83,7 @@ class _GeminiSuggestState extends State<GeminiSuggest> {
     // Create a prompt using user and matched preferences
     String prompt = "Based on the user's preferences: ${widget.userPreferences.join(', ')} "
         "and matched preferences: ${widget.matchedPreferences.join(', ')}, "
-        "can you suggest some food options that are not already included in the existing suggestions?";
+        "can you recommend some food options that are similar to user's preferences and matched preferences?";
 
     // Send the prompt to Gemini
     gemini.streamGenerateContent(prompt).listen((event) {
@@ -133,7 +135,7 @@ class _GeminiSuggestState extends State<GeminiSuggest> {
           ChatMessage newMessage = ChatMessage(
             user: geminiUser,
             createdAt: DateTime.now(),
-            text: response,
+            text: _formatGeminiResponse(response),
           );
           setState(() {
             messages.add(newMessage);
@@ -143,5 +145,19 @@ class _GeminiSuggestState extends State<GeminiSuggest> {
     } catch (e) {
       print(e);
     }
+  }
+
+  String _formatGeminiResponse(String? response) {
+    // Check if response is null or empty
+    if (response == null || response.isEmpty) {
+      return "No response available.";
+    }
+
+    // You can implement further formatting logic here as needed
+    // For instance, if the response contains asterisks
+    return response.replaceAllMapped(RegExp(r'\*(.*?)\*'), (match) {
+      // Format asterisks for bold or other styling if needed
+      return match.group(1) != null ? "**${match.group(1)}**" : "";
+    });
   }
 }

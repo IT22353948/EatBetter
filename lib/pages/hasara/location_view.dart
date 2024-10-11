@@ -388,7 +388,7 @@ class _LocationViewState extends State<LocationView> {
       await _mapController!.animateCamera(CameraUpdate.newCameraPosition(
         CameraPosition(
           target: position,
-          zoom: 13,
+          zoom: 12,
         ),
       ));
     }

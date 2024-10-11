@@ -1,29 +1,27 @@
-
 import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 
-
 class GeminiSuggest extends StatefulWidget {
-  const GeminiSuggest ({super.key, required List<String> userPreferences});
+  final List<String> userPreferences;
+
+  const GeminiSuggest({super.key, required this.userPreferences, required List<String> matchedPreferences});
 
   @override
   State<GeminiSuggest> createState() => _GeminiSuggestState();
 }
 
 class _GeminiSuggestState extends State<GeminiSuggest> {
+  Gemini gemini = Gemini.instance;
 
-   Gemini gemini = Gemini.instance;
+  final ChatUser currentUser = ChatUser(id: "0", firstName: "User"); // Define current user
+  final ChatUser geminiUser = ChatUser(
+    id: "1",
+    firstName: "Gemini",
+    profileImage: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.reddit.com%2Fr%2FTech_Philippines%2Fcomments%2F1apkec4%2Fhow_to_access_google_gemini_on_your_phone_if_you%2F&psig=AOvVaw200QijMF1OJU33v-1o_XIq&ust=1726296264844000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCMCSze-ov4gDFQAAAAAdAAAAABAJ",
+  );
 
-  final ChatUser currentUser = ChatUser(id: "0" , firstName: "user"); // Define current user
-  final ChatUser geminiUser = ChatUser(id: "1" ,
-   firstName: "Gemini",
-   profileImage: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.reddit.com%2Fr%2FTech_Philippines%2Fcomments%2F1apkec4%2Fhow_to_access_google_gemini_on_your_phone_if_you%2F&psig=AOvVaw200QijMF1OJU33v-1o_XIq&ust=1726296264844000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCMCSze-ov4gDFQAAAAAdAAAAABAJ");
-  
-  
   List<ChatMessage> messages = []; // Define list of messages
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +35,9 @@ class _GeminiSuggestState extends State<GeminiSuggest> {
 
   Widget buildUI() {
     return DashChat(
-      currentUser: currentUser, onSend: onSend, messages: messages,
+      currentUser: currentUser,
+      onSend: onSend,
+      messages: messages,
     );
   }
 
@@ -47,30 +47,30 @@ class _GeminiSuggestState extends State<GeminiSuggest> {
     });
 
     try {
-      
       String question = message.text;
       gemini.streamGenerateContent(question).listen((event) {
-        ChatMessage? lastmessage = messages.firstOrNull;
-        if(lastmessage != null && lastmessage.user == geminiUser){
+        String? response = event.content?.parts?.fold("", (previous, current) => "$previous ${current.text}") ?? "";
 
-          lastmessage = messages.removeAt(0);
-          String? response = event.content?.parts?.fold("", (previous , current) => "$previous ${current.text}") ?? "";
-          lastmessage.text += response;
+        // Check if the last message was from Gemini
+        if (messages.isNotEmpty && messages.last.user == geminiUser) {
+          // Update the last message instead of creating a new one
+          ChatMessage lastMessage = messages.removeLast();
+          lastMessage.text += response; // Append the response
           setState(() {
-
-            //this code has changed - nor original code
-            messages.add(messages as ChatMessage);
+            messages.add(lastMessage); // Update the message in the list
           });
-
-        }else{
-          String? response = event.content?.parts?.fold("", (previous , current) => "$previous ${current.text}") ?? "";
-          ChatMessage newMessage = ChatMessage(user: geminiUser, createdAt: DateTime.now(), text: response);
+        } else {
+          // If it's a new message from Gemini
+          ChatMessage newMessage = ChatMessage(
+            user: geminiUser,
+            createdAt: DateTime.now(),
+            text: response,
+          );
           setState(() {
-            messages.add(newMessage);
+            messages.add(newMessage); // Add the new message to the list
           });
         }
       });
-
     } catch (e) {
       print(e);
     }

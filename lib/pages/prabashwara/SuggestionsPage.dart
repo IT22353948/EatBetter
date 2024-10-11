@@ -1,3 +1,4 @@
+import 'package:eat_better/pages/prabashwara/Gemini_suggest.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -34,6 +35,7 @@ class _SuggestionsPageState extends State<SuggestionsPage> {
         title: const Text('Suggestions Based on Preferences'),
       ),
       body: _buildSuggestionsView(),
+      bottomNavigationBar: _buildSendButton()
     );
   }
 
@@ -258,6 +260,7 @@ class _SuggestionsPageState extends State<SuggestionsPage> {
         ),
       ),
     );
+    
   }
 
   List<PieChartSectionData> _preparePieChartData() {
@@ -317,6 +320,26 @@ class _SuggestionsPageState extends State<SuggestionsPage> {
     // Check if a line contains special characters or unwanted patterns
     RegExp specialCharPattern = RegExp(r'[^\w\s]'); // Pattern for non-word, non-space characters
     return !specialCharPattern.hasMatch(line);
+  }
+
+  Widget _buildSendButton() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ElevatedButton(
+        onPressed: _onSendButtonPressed,
+        child: const Text('Send Preferences to Gemini Suggest'),
+      ),
+    );
+  }
+
+  void _onSendButtonPressed() {
+    // Navigate to GeminiSuggest with the matched preferences
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => GeminiSuggest(matchedPreferences: _matchedPreferences, userPreferences: [],),
+      ),
+    );
   }
 
   bool _doesLineMatchUserPreferences(String line) {

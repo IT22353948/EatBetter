@@ -26,13 +26,13 @@ class NutriProgressCard extends StatelessWidget {
         margin: const EdgeInsets.all(10),
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Color.fromARGB(101, 248, 100, 37),
+          color: Color.fromARGB(92, 248, 100, 37),
           borderRadius: BorderRadius.circular(20),
         ),
         child: isLoading
             ? const Center(
-                child: SpinKitRing(
-                  color: Colors.orange,
+                child: SpinKitFadingCircle(
+                  color: Color.fromARGB(192, 187, 5, 5),
                   size: 50.0,
                 ),
               )

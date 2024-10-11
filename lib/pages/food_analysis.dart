@@ -1,5 +1,9 @@
+import 'package:eat_better/pages/custome_analysis.dart';
+import 'package:eat_better/services/food_api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:eat_better/pages/common_tab.dart';
+
+Map<String, dynamic> analysis = {};
 
 class FoodAnalysis extends StatefulWidget {
   const FoodAnalysis({super.key});
@@ -9,6 +13,22 @@ class FoodAnalysis extends StatefulWidget {
 }
 
 class _FoodAnalysisState extends State<FoodAnalysis> {
+  // Create a TextEditingController to manage the input
+  final TextEditingController _ingredientsController = TextEditingController();
+
+  @override
+  void dispose() {
+    // Dispose the controller when the widget is disposed
+    _ingredientsController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _analyzeFood(List<String> ing) async {
+    // Add your action here
+    //print the typed ingredients
+    analysis = await FoodService.analyzeNutrition(ing);
+  }
+
   @override
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
@@ -52,6 +72,7 @@ class _FoodAnalysisState extends State<FoodAnalysis> {
                   ),
                   const SizedBox(height: 20),
                   TextField(
+                    controller: _ingredientsController,
                     maxLines: 10,
                     decoration: InputDecoration(
                       hintText:
@@ -77,8 +98,20 @@ class _FoodAnalysisState extends State<FoodAnalysis> {
                   ),
                   const SizedBox(height: 10),
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       // Add your action here
+                      //print the typed ingredients
+                      await _analyzeFood(
+                          _ingredientsController.text.split(','));
+                      //navigate to the NutriDetailsCharts using component dirrectly
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CustomeAnalysis(
+                            nutritionData: analysis,
+                          ),
+                        ),
+                      );
                     },
                     style: ButtonStyle(
                       backgroundColor: const WidgetStatePropertyAll<Color>(

@@ -88,7 +88,7 @@ class _SplashScreenState extends State<SplashScreen>
             const Padding(
               padding: EdgeInsets.only(
                   bottom: 50.0), // Optional padding for bottom spacing
-              child: const SpinKitFadingCircle(
+              child: SpinKitFadingCircle(
                 color: Colors.orange,
                 size: 50.0,
               ),

@@ -174,4 +174,47 @@ class FoodService {
       };
     }
   }
+
+  // Analyze nutrition using Edamam API
+  static Future<Map<String, dynamic>> analyzeNutrition(
+      List<String> ingredients) async {
+    // Edamam API credentials
+    const String edamamAppId = '863a0e0c';
+    const String edamamAppKey = '280150eed2fd1c42b096f2dc9aa8c703';
+    const String apiUrl =
+        'https://api.edamam.com/api/nutrition-details?app_id=$edamamAppId&app_key=$edamamAppKey&beta=true';
+
+    // Prepare the request body
+    Map<String, List<String>> payload = {"ingr": ingredients};
+
+    print(jsonEncode(payload));
+
+    try {
+      // Make the POST request to the Edamam API
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          'content-Type': 'application/json',
+          'accept': 'application/json',
+        },
+        body: jsonEncode(payload),
+      );
+
+      // If the request is successful, parse the data
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        print('Nutrition data fetched successfully: ${data['totalNutrients']}');
+        return data['totalNutrients'];
+      } else {
+        print('Failed to fetch nutrition data: ${response.statusCode}');
+        return {
+          'error':
+              'Failed to fetch nutrition data\nPlease Correct the Ingredients and try again'
+        };
+      }
+    } catch (e) {
+      print('Error occurred while fetching nutrition data: $e');
+      return {'error': 'Error occurred while fetching nutrition data'};
+    }
+  }
 }

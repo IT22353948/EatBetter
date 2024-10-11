@@ -1,3 +1,4 @@
+import 'package:eat_better/pages/nutri_details.dart';
 import 'package:eat_better/pages/widgets/circle_button.dart';
 import 'package:eat_better/pages/widgets/custom_clip_path.dart';
 import 'package:eat_better/pages/widgets/ingredient_item.dart';
@@ -104,9 +105,21 @@ class _RecipeDetailState extends State<RecipeDetail> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                CircleButton(
-                                  icon: Icons.analytics_outlined,
-                                  label: 'Nutrition\nDetails',
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => NutriDetails(
+                                                  id: widget.recipeId,
+                                                  name: details['title'],
+                                                  imageUrl: details['image'],
+                                                )));
+                                  },
+                                  child: CircleButton(
+                                    icon: Icons.analytics_outlined,
+                                    label: 'Nutrition\nDetails',
+                                  ),
                                 ),
                                 GestureDetector(
                                   onTap: () {

@@ -95,8 +95,8 @@ class HomeTabBarView extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-              child: SpinKitRing(
-                color: Colors.orange,
+              child: SpinKitFadingCircle(
+                color: Color.fromARGB(192, 187, 5, 5),
                 size: 50.0,
               ),
             );

@@ -194,6 +194,14 @@ class _NutriDetailsState extends State<NutriDetails> {
                       children: [
                         Expanded(
                           child: GestureDetector(
+                            // onTap: () => Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder: (context) => RecipeDetailsScreen(
+                            //       recipeId: widget.id,
+                            //     ),
+                            //   ),
+                            // ),
                             child: Card(
                               elevation: 5,
                               margin: const EdgeInsets.symmetric(
@@ -237,6 +245,18 @@ class _NutriDetailsState extends State<NutriDetails> {
                         const SizedBox(width: 10),
                         Expanded(
                           child: GestureDetector(
+                            // Add onTap event to navigate to another page
+                            // onTap: () {
+                            //   Navigator.push(
+                            //     context,
+                            //     MaterialPageRoute(
+                            //       builder: (context) => VideoThumbnailScreen(
+                            //         id: widget.id,
+                            //         name: widget.name,
+                            //       ),
+                            //     ),
+                            //   );
+                            // },
                             child: Card(
                               elevation: 5,
                               margin: const EdgeInsets.symmetric(

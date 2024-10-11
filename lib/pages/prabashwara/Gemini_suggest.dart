@@ -4,8 +4,15 @@ import 'package:flutter_gemini/flutter_gemini.dart';
 
 class GeminiSuggest extends StatefulWidget {
   final List<String> userPreferences;
+  final List<String> matchedPreferences;
+  final List<Map<String, int>> LinesWithMultiplePreferences;
 
-  const GeminiSuggest({super.key, required this.userPreferences, required List<String> matchedPreferences});
+  const GeminiSuggest({
+    super.key,
+    required this.matchedPreferences,
+    required this.userPreferences,
+    required this.LinesWithMultiplePreferences,
+  });
 
   @override
   State<GeminiSuggest> createState() => _GeminiSuggestState();
@@ -14,14 +21,26 @@ class GeminiSuggest extends StatefulWidget {
 class _GeminiSuggestState extends State<GeminiSuggest> {
   Gemini gemini = Gemini.instance;
 
-  final ChatUser currentUser = ChatUser(id: "0", firstName: "User"); // Define current user
+  final ChatUser currentUser = ChatUser(id: "0", firstName: "User");
   final ChatUser geminiUser = ChatUser(
     id: "1",
     firstName: "Gemini",
-    profileImage: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.reddit.com%2Fr%2FTech_Philippines%2Fcomments%2F1apkec4%2Fhow_to_access_google_gemini_on_your_phone_if_you%2F&psig=AOvVaw200QijMF1OJU33v-1o_XIq&ust=1726296264844000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCMCSze-ov4gDFQAAAAAdAAAAABAJ",
+    profileImage: "https://www.example.com/profile_image.png", // Use a valid image URL
   );
 
-  List<ChatMessage> messages = []; // Define list of messages
+  List<ChatMessage> messages = [];
+
+  @override
+  void initState() {
+    super.initState();
+    debugReservedPreferences();
+  }
+
+  void debugReservedPreferences() {
+    print("User Preferences: ${widget.userPreferences}");
+    print("LinesWithMultiplePreferences: ${widget.LinesWithMultiplePreferences}");
+    print("Matched Preferences: ${widget.matchedPreferences}");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,11 +53,64 @@ class _GeminiSuggestState extends State<GeminiSuggest> {
   }
 
   Widget buildUI() {
-    return DashChat(
-      currentUser: currentUser,
-      onSend: onSend,
-      messages: messages,
+    return Column(
+      children: [
+        Expanded(
+          child: DashChat(
+            currentUser: currentUser,
+            onSend: onSend,
+            messages: messages,
+          ),
+        ),
+        buildSmartReplyButton(),
+      ],
     );
+  }
+
+  Widget buildSmartReplyButton() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ElevatedButton(
+        onPressed: suggestNewFoods,
+        child: const Text('Suggest New Foods'),
+      ),
+    );
+  }
+
+  void suggestNewFoods() {
+    // Create a prompt using user and matched preferences
+    String prompt = "Based on the user's preferences: ${widget.userPreferences.join(', ')} "
+        "and matched preferences: ${widget.matchedPreferences.join(', ')}, "
+        "can you suggest some food options that are not already included in the existing suggestions?";
+
+    // Send the prompt to Gemini
+    gemini.streamGenerateContent(prompt).listen((event) {
+      String? response = event.content?.parts?.fold("", (previous, current) => "$previous ${current.text}") ?? "";
+
+      if (response != null && response.isNotEmpty) {
+        // Create a response message with suggestions
+        ChatMessage suggestionMessage = ChatMessage(
+          user: geminiUser,
+          createdAt: DateTime.now(),
+          text: response,
+        );
+
+        setState(() {
+          messages.add(suggestionMessage); // Add the suggestion message to the chat
+        });
+      } else {
+        // Handle case where no suggestions are found
+        ChatMessage noSuggestionMessage = ChatMessage(
+          user: geminiUser,
+          createdAt: DateTime.now(),
+          text: "I couldn't find any new food suggestions for you.",
+        );
+
+        setState(() {
+          messages.add(noSuggestionMessage);
+        });
+      }
+    });
   }
 
   void onSend(ChatMessage message) {
@@ -51,23 +123,20 @@ class _GeminiSuggestState extends State<GeminiSuggest> {
       gemini.streamGenerateContent(question).listen((event) {
         String? response = event.content?.parts?.fold("", (previous, current) => "$previous ${current.text}") ?? "";
 
-        // Check if the last message was from Gemini
         if (messages.isNotEmpty && messages.last.user == geminiUser) {
-          // Update the last message instead of creating a new one
           ChatMessage lastMessage = messages.removeLast();
-          lastMessage.text += response; // Append the response
+          lastMessage.text += response;
           setState(() {
-            messages.add(lastMessage); // Update the message in the list
+            messages.add(lastMessage);
           });
         } else {
-          // If it's a new message from Gemini
           ChatMessage newMessage = ChatMessage(
             user: geminiUser,
             createdAt: DateTime.now(),
             text: response,
           );
           setState(() {
-            messages.add(newMessage); // Add the new message to the list
+            messages.add(newMessage);
           });
         }
       });

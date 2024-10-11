@@ -266,7 +266,7 @@ class _SuggestionsPageState extends State<SuggestionsPage> {
   List<PieChartSectionData> _preparePieChartData() {
     List<PieChartSectionData> sections = [];
     Map<String, int> preferencesCount = {};
-    print("Matched Preferences: ${_matchedPreferences.join(', ')}"); // Debugging: print user preferences
+    print("Matched Preferences: ${_linesWithMultiplePreferences.join(', ')}"); // Debugging: print user preferences
 
 
     // Count the occurrences of each preference
@@ -337,7 +337,7 @@ class _SuggestionsPageState extends State<SuggestionsPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => GeminiSuggest(matchedPreferences: _matchedPreferences, userPreferences: [],),
+        builder: (context) => GeminiSuggest(matchedPreferences: _matchedPreferences, LinesWithMultiplePreferences: _linesWithMultiplePreferences, userPreferences: [],),
       ),
     );
   }

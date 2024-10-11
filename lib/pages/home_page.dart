@@ -61,12 +61,12 @@ class HomePage extends StatelessWidget {
             ],
           ),
         ),
-
         padding: const EdgeInsets.all(16.0),
         child: GridView.count(
           crossAxisCount: 2,
           crossAxisSpacing: 16,
           mainAxisSpacing: 16,
+          childAspectRatio: 0.75, // Adjust aspect ratio for card size
           children: [
             _buildNavigationCard(
               context,
@@ -88,10 +88,10 @@ class HomePage extends StatelessWidget {
             ),
             _buildNavigationCard(
               context,
-              'show perferences ',
+              'Show Preferences',
               'View your favorite dishes',
               Icons.favorite,
-              const SuggestionsPage(extractedText: '',), // Replace with the actual Favorites screen
+              const SuggestionsPage(extractedText: ''), // Replace with the actual Favorites screen
               Colors.pinkAccent, // Icon color
               Color(0xFF27AE60), // Card border color
             ),
@@ -139,43 +139,47 @@ class HomePage extends StatelessWidget {
   ) {
     return Card(
       shape: RoundedRectangleBorder(
-        side: BorderSide(color: borderColor, width: 4), // Custom card border color
-        borderRadius: BorderRadius.circular(8.0),
+        side: BorderSide(color: borderColor, width: 2), // Custom card border color
+        borderRadius: BorderRadius.circular(12.0), // Slightly rounded corners
       ),
-      elevation: 5,
+      elevation: 8, // Increased elevation for better shadow
       child: InkWell(
+        borderRadius: BorderRadius.circular(12.0), // Matching border radius
         onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => destination),
           );
         },
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              size: 50,
-              color: iconColor, // Custom icon color
-            ),
-            const SizedBox(height: 10),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0), // Added padding inside card
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: 60, // Slightly larger icon
+                color: iconColor, // Custom icon color
               ),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              subtitle,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
+              const SizedBox(height: 12), // Increased spacing
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 20, // Larger title text
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 6),
+              Text(
+                subtitle,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 16, // Larger subtitle text
+                  color: Colors.grey,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

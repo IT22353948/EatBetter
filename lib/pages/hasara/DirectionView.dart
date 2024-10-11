@@ -25,7 +25,7 @@ class _DirectionViewState extends State<DirectionView> {
   GoogleMapController? _mapController;
   List<LatLng> _routeCoordinates = []; // Stores the polyline coordinates for the route
   Set<Polyline> _polylines = {}; // Store the route polylines
-  final String _directionsApiKey = "AIzaSyCIOwQeu3gc7WmTqb_aqnznqufJalwZ_s4";
+  final String _directionsApiKey = "AIzaSyChbkTv2GftiM0IJcEXuxmwWIVhjz5k52M";
   Set<Marker> _markers = {};
   double _distanceToDestination = 0.0; // Distance between user and restaurant
 

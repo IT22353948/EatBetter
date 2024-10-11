@@ -1,3 +1,5 @@
+import 'package:eat_better/navigation_menu.dart';
+import 'package:eat_better/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:eat_better/pages/prabashwara/SuggestionsPage.dart'; // Adjust the path as necessary
 
@@ -73,6 +75,10 @@ class NextPage extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       // Second button action (to be defined)
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => NavigationMenu()), // Wrap HomePage in a MaterialPageRoute
+                        );
                     },
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 30.0),
@@ -82,7 +88,7 @@ class NextPage extends StatelessWidget {
                       ),
                     ),
                     child: const Text(
-                      ' Mark ',
+                      ' Home ',
                       style: TextStyle(
                         fontSize: 18,
                         color: Colors.white,

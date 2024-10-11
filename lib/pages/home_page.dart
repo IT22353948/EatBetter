@@ -1,8 +1,10 @@
 import 'package:eat_better/authFile/auth.dart';
 import 'package:eat_better/authFile/login_register.dart';
 import 'package:eat_better/authFile/widget_tree.dart';
+import 'package:eat_better/pages/hasara/BannerView.dart';
 import 'package:eat_better/pages/prabashwara/SuggestionsPage.dart';
 import 'package:eat_better/pages/prabashwara/Preferences/preference_page.dart';
+import 'package:eat_better/pages/recipe_search.dart';
 import 'package:flutter/material.dart';
 import 'prabashwara/Image_To_Text.dart';
 import 'food_analysis.dart';
@@ -106,7 +108,7 @@ class HomePage extends StatelessWidget {
                               'Recipe',
                               'Find Recipes',
                               Icons.receipt, // Updated icon
-                              const SuggestionsPage(extractedText: ''),
+                              RecipeSearch(),
                               Colors.pinkAccent,
                               Color(0xFF27AE60), // Border color
                               Colors.white, // Card background color
@@ -116,7 +118,7 @@ class HomePage extends StatelessWidget {
                               'Map',
                               'Find Your restaurants',
                               Icons.map, // Updated icon
-                              Container(),
+                              BannerView(),
                               Colors.grey,
                               Color(0xFF8E44AD), // Border color
                               Colors.white, // Card background color

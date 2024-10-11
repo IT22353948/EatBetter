@@ -1,4 +1,5 @@
 import 'package:dash_chat_2/dash_chat_2.dart';
+import 'package:eat_better/navigation_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 
@@ -47,6 +48,16 @@ class _GeminiSuggestState extends State<GeminiSuggest> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home Page'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.cancel),
+            onPressed: () {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => NavigationMenu()),
+              );
+            },
+          ),
+        ],
       ),
       body: buildUI(),
     );
@@ -60,8 +71,6 @@ class _GeminiSuggestState extends State<GeminiSuggest> {
             currentUser: currentUser,
             onSend: onSend,
             messages: messages,
-            // You can customize the message display by modifying messages in onSend
-            // or directly in the list here as needed.
           ),
         ),
         buildSmartReplyButton(),
@@ -153,11 +162,11 @@ class _GeminiSuggestState extends State<GeminiSuggest> {
       return "No response available.";
     }
 
-    // You can implement further formatting logic here as needed
-    // For instance, if the response contains asterisks
+    // Implement further formatting logic here as needed
     return response.replaceAllMapped(RegExp(r'\*(.*?)\*'), (match) {
       // Format asterisks for bold or other styling if needed
       return match.group(1) != null ? "**${match.group(1)}**" : "";
     });
   }
 }
+

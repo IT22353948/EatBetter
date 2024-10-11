@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as location_package;
 import 'package:geocoding/geocoding.dart'; 
-import 'package:http/http.dart' as http; // Import for making API requests
+import 'package:http/http.dart' as http; 
 import 'package:custom_rating_bar/custom_rating_bar.dart';  //ratings
 import 'package:geolocator/geolocator.dart';
 import 'DirectionView.dart';
@@ -23,12 +23,16 @@ class _LocationViewState extends State<LocationView> {
   final TextEditingController _searchController = TextEditingController(); // Controller for search input
   final Set<Marker> _markers = {}; // Markers for map
   static const String _locationText = "Find Your Restaurant";
+  LatLng? _previousP; // Previous location
+
+  // Threshold distance for fetching new places
+  final double _distanceThreshold = 500; // in meters
 
  //Track the selected restaurant's palce id
  String? _selectedRestaurantId;
 
   // Google Places API key
-  final String _placesApiKey = "AIzaSyCIOwQeu3gc7WmTqb_aqnznqufJalwZ_s4";
+  final String _placesApiKey = "AIzaSyChbkTv2GftiM0IJcEXuxmwWIVhjz5k52M";
 
   // List to hold nearby restaurant data
   List<dynamic> _restaurants = [];
@@ -75,7 +79,7 @@ class _LocationViewState extends State<LocationView> {
                     },
                     initialCameraPosition: CameraPosition(
                       target: _currentP!,
-                      zoom: 13,
+                      zoom: 12,
                     ),
                     markers: _markers, // Set all markers, including restaurants
                   ),
@@ -336,8 +340,14 @@ class _LocationViewState extends State<LocationView> {
     // Listen for location changes
     _locationController.onLocationChanged.listen((location_package.LocationData currentLocation) {
       if (currentLocation.latitude != null && currentLocation.longitude != null) {
-        setState(() {
-          _currentP = LatLng(currentLocation.latitude!, currentLocation.longitude!);
+      
+            LatLng newPosition = LatLng(currentLocation.latitude!, currentLocation.longitude!);
+            // Only fetch new restaurants if the user has moved more than 500 meters
+        if (_previousP == null || _hasMovedMoreThanThreshold(_previousP!, newPosition, _distanceThreshold)) {
+          setState(() {
+            _currentP = newPosition;
+            _previousP = newPosition; // Update previous location
+          });
 
           // Add a marker for the current location
           _markers.add(
@@ -354,10 +364,23 @@ class _LocationViewState extends State<LocationView> {
 
           // Fetch nearby restaurants after current location is set
           _fetchNearbyRestaurants();
-        });
+        }
       }
     });
   }
+  
+  // Method to calculate distance and check if user has moved more than 500 meters
+  bool _hasMovedMoreThanThreshold(LatLng previous, LatLng current, double threshold) {
+    double distanceInMeters = Geolocator.distanceBetween(
+      previous.latitude,
+      previous.longitude,
+      current.latitude,
+      current.longitude,
+    );
+    return distanceInMeters > threshold;
+  }
+
+
 
   // Move the camera to the provided location
   Future<void> _moveCamera(LatLng position) async {
@@ -365,7 +388,7 @@ class _LocationViewState extends State<LocationView> {
       await _mapController!.animateCamera(CameraUpdate.newCameraPosition(
         CameraPosition(
           target: position,
-          zoom: 13,
+          zoom: 12,
         ),
       ));
     }

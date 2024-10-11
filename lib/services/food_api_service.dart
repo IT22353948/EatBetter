@@ -49,7 +49,7 @@ class FoodService {
 
     // If data is not cached, proceed with the API call.
     String apiEndpointUrl =
-        'https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/complexSearch?query=$name&number=1';
+        'https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/complexSearch?query=$name&number=4';
     List<Map<String, dynamic>> recipes = [];
 
     // Make the API request.

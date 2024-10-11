@@ -13,6 +13,7 @@ class IngredientItem extends StatelessWidget {
     final w = MediaQuery.of(context).size.width;
     final h = MediaQuery.of(context).size.height;
     return Container(
+      height: h * 0.05, // Adjusted height
       margin: EdgeInsets.symmetric(
           vertical: h * 0.01,
           horizontal: w * 0.05), // Adjusted horizontal margin
@@ -44,10 +45,6 @@ class IngredientItem extends StatelessWidget {
             ),
           ),
           SizedBox(width: w * 0.02), // Spacing between text and icon
-          const Icon(
-            Icons.add,
-            color: Colors.black,
-          )
         ],
       ),
     );

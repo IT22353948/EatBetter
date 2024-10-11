@@ -17,15 +17,15 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     super.initState();
-    SystemChrome.setEnabledSystemUIMode(
-        SystemUiMode.immersive); // Hide the system UI elemnts
+    // SystemChrome.setEnabledSystemUIMode(
+    //     SystemUiMode.immersive); // Hide the system UI elemnts
     _checkConnectivity(); // Check connectivity when splash screen is initialized
   }
 
   @override
   void dispose() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-        overlays: SystemUiOverlay.values); // Show the system UI elements
+    // SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+    //     overlays: SystemUiOverlay.values); // Show the system UI elements
     super.dispose();
   }
 

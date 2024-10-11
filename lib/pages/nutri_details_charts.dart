@@ -231,7 +231,7 @@ class IndividualNutrientCard extends StatelessWidget {
                     border: Border.all(
                       // Add a border with a specific color
                       color: progressColor, // Use the passed border color
-                      width: 2, // Border width
+                      width: 1, // Border width
                     ),
                   ),
                   child: Stack(

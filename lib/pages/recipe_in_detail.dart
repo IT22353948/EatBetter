@@ -6,6 +6,7 @@ import 'package:eat_better/pages/youtube_view.dart';
 import 'package:eat_better/services/food_api_service.dart';
 import 'package:flutter/material.dart';
 import 'dart:core';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 Map<String, dynamic> details = {}; // Store the recipe details
 
@@ -53,11 +54,24 @@ class _RecipeDetailState extends State<RecipeDetail> {
     final w = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: const Text('Recipe'),
+        backgroundColor: Color.fromARGB(126, 248, 100, 37),
+        leading: IconButton(
+          iconSize: 30,
+          icon: Image.asset('assets/icons/BackButton.png'),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
       backgroundColor: Colors.grey.shade300,
       body: isLoading
           ? Center(
-              child: CircularProgressIndicator(), // Show loading spinner
+              child: SpinKitFadingCircle(
+                color: Color.fromARGB(192, 187, 5, 5),
+                size: 50.0,
+              ), // Show loading spinner
             )
           : SingleChildScrollView(
               child: Column(
@@ -92,13 +106,13 @@ class _RecipeDetailState extends State<RecipeDetail> {
                             const SizedBox(
                               height: 5,
                             ),
-                            Text(
-                              "${details['preparationMinutes'].toString()} minutes",
-                              style: TextStyle(
-                                  fontSize: w * 0.045,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black.withOpacity(0.8)),
-                            ),
+                            // Text(
+                            //   "${details['preparationMinutes'].toString()} minutes",
+                            //   style: TextStyle(
+                            //       fontSize: w * 0.045,
+                            //       fontWeight: FontWeight.w600,
+                            //       color: Colors.black.withOpacity(0.8)),
+                            // ),
                             SizedBox(
                               height: h * .02,
                             ),
@@ -153,7 +167,8 @@ class _RecipeDetailState extends State<RecipeDetail> {
                                     child: ClipPath(
                                       clipper: CustomClipPath(),
                                       child: Container(
-                                        color: Colors.redAccent,
+                                        color:
+                                            Color.fromARGB(211, 246, 106, 46),
                                         child: Center(
                                           child: Text(
                                             'Ingredients Required',
@@ -228,7 +243,8 @@ class _RecipeDetailState extends State<RecipeDetail> {
                                     child: ClipPath(
                                       clipper: CustomClipPath(),
                                       child: Container(
-                                        color: Colors.redAccent,
+                                        color:
+                                            Color.fromARGB(211, 246, 106, 46),
                                         child: Center(
                                           child: Text(
                                             'Instructions',
@@ -246,20 +262,6 @@ class _RecipeDetailState extends State<RecipeDetail> {
                                     flex: 1,
                                     child: Container(
                                       color: Colors.white,
-                                      child: Center(
-                                        child: Text(
-                                          details['extendedIngredients']
-                                              .length
-                                              .toString(),
-                                          style: TextStyle(
-                                            fontSize: w * 0.045,
-                                            fontWeight: FontWeight.w600,
-                                            color:
-                                                Colors.black.withOpacity(0.8),
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
                                     ),
                                   ),
                                 ],

@@ -24,13 +24,14 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = Auth().CurrentUser;
-    String trimmedEmail = (user?.email ?? "User").split('@').first; // Trimmed email
+    String trimmedEmail =
+        (user?.email ?? "User").split('@').first; // Trimmed email
 
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: const Text('EatBetter'),
-        backgroundColor: const Color(0xFFF86A2E), // AppBar color
+        backgroundColor: Color.fromARGB(126, 248, 100, 37),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
@@ -69,7 +70,9 @@ class HomePage extends StatelessWidget {
             children: [
               // Swappable View (showing 2 cards per page) with added margin
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0), // Margin for the swap view container
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 16.0), // Margin for the swap view container
                 child: SizedBox(
                   height: 250, // Adjust height for the cards
                   child: PageView(
@@ -77,7 +80,8 @@ class HomePage extends StatelessWidget {
                       Container(
                         child: Row(
                           children: [
-                            Expanded(child: _buildNavigationCard(
+                            Expanded(
+                                child: _buildNavigationCard(
                               context,
                               'Text Scanner',
                               'Scan and extract text from images',
@@ -87,7 +91,8 @@ class HomePage extends StatelessWidget {
                               Color(0xFFF86A2E), // Border color
                               Colors.white, // Card background color
                             )),
-                            Expanded(child: _buildNavigationCard(
+                            Expanded(
+                                child: _buildNavigationCard(
                               context,
                               'Preferences',
                               'Explore and discover new recipes',
@@ -103,7 +108,8 @@ class HomePage extends StatelessWidget {
                       Container(
                         child: Row(
                           children: [
-                            Expanded(child: _buildNavigationCard(
+                            Expanded(
+                                child: _buildNavigationCard(
                               context,
                               'Recipe',
                               'Find Recipes',
@@ -113,7 +119,8 @@ class HomePage extends StatelessWidget {
                               Color(0xFF27AE60), // Border color
                               Colors.white, // Card background color
                             )),
-                            Expanded(child: _buildNavigationCard(
+                            Expanded(
+                                child: _buildNavigationCard(
                               context,
                               'Map',
                               'Find Your restaurants',
@@ -129,7 +136,8 @@ class HomePage extends StatelessWidget {
                       Container(
                         child: Row(
                           children: [
-                            Expanded(child: _buildNavigationCard(
+                            Expanded(
+                                child: _buildNavigationCard(
                               context,
                               'Food Analysis',
                               'Analyze the nutritional value of food',
@@ -139,7 +147,8 @@ class HomePage extends StatelessWidget {
                               Color(0xFFE67E22), // Border color
                               Colors.white, // Card background color
                             )),
-                            Expanded(child: _buildNavigationCard(
+                            Expanded(
+                                child: _buildNavigationCard(
                               context,
                               'Sample Card',
                               'Lorem ipsum',
@@ -191,7 +200,9 @@ class HomePage extends StatelessWidget {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              const SizedBox(height: 8), // Space between title and description
+                              const SizedBox(
+                                  height:
+                                      8), // Space between title and description
                               Text(
                                 'Get recommendations based on your preferences, helping you discover new foods and recipes you’ll love.',
                                 style: const TextStyle(fontSize: 14),
@@ -239,7 +250,9 @@ class HomePage extends StatelessWidget {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              const SizedBox(height: 8), // Space between title and description
+                              const SizedBox(
+                                  height:
+                                      8), // Space between title and description
                               Text(
                                 'Analyze the calories and nutritional values of the food you consume for a healthier lifestyle.',
                                 style: const TextStyle(fontSize: 14),
@@ -272,7 +285,8 @@ class HomePage extends StatelessWidget {
   ) {
     return Card(
       shape: RoundedRectangleBorder(
-        side: BorderSide(color: borderColor, width: 2), // Custom card border color
+        side: BorderSide(
+            color: borderColor, width: 2), // Custom card border color
         borderRadius: BorderRadius.circular(12.0), // Slightly rounded corners
       ),
       elevation: 8, // Card shadow
@@ -288,7 +302,8 @@ class HomePage extends StatelessWidget {
           // Set the background color for the card
           decoration: BoxDecoration(
             color: backgroundColor, // Card background color
-            borderRadius: BorderRadius.circular(12.0), // Rounded corners for card background
+            borderRadius: BorderRadius.circular(
+                12.0), // Rounded corners for card background
           ),
           child: Padding(
             padding: const EdgeInsets.all(16.0),

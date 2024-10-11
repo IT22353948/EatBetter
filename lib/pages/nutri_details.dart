@@ -1,8 +1,6 @@
+import 'package:eat_better/pages/recipe_in_detail.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:vector_math/vector_math_64.dart' as math;
 import 'package:eat_better/services/food_api_service.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:eat_better/pages/nutri_details_charts.dart';
 import 'package:eat_better/pages/nutriProgressCardWidget.dart';
 
@@ -194,14 +192,14 @@ class _NutriDetailsState extends State<NutriDetails> {
                       children: [
                         Expanded(
                           child: GestureDetector(
-                            // onTap: () => Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (context) => RecipeDetailsScreen(
-                            //       recipeId: widget.id,
-                            //     ),
-                            //   ),
-                            // ),
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => RecipeDetail(
+                                  recipeId: widget.id,
+                                ),
+                              ),
+                            ),
                             child: Card(
                               elevation: 5,
                               margin: const EdgeInsets.symmetric(

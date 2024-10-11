@@ -5,10 +5,13 @@ import 'dart:convert';
 class FoodService {
   // API key for Spoonacular API, rapid api. for limit the calls i have add an extra number to the end of the key
   //to get this fetch function to work. remove the last integer from the api key
-  static String apiKey = '26e308d91dmsh73617d5e1036f24p15c7c4jsne600d99e4859';
+  static String apiKey = 'f55df82316msh842c240084ca715p1a5eb7jsn59a5586ea982';
 
   // Cache to store fetched recipes by name
   static Map<String, List<Map<String, dynamic>>> _cache = {};
+
+  // Cache for nutrition data by recipe ID
+  static Map<int, Map<String, dynamic>> _nutritionCache = {};
 
   //this function is used to get the recipe for the food item.
   //when call this function have to pass the name of the food. it will fetch upto 3 items for the food item.
@@ -46,7 +49,7 @@ class FoodService {
 
     // If data is not cached, proceed with the API call.
     String apiEndpointUrl =
-        'https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/complexSearch?query=$name&number=5';
+        'https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/complexSearch?query=$name&number=4';
     List<Map<String, dynamic>> recipes = [];
 
     // Make the API request.
@@ -83,12 +86,18 @@ class FoodService {
     return recipes;
   }
 
-  // New Function: Fetch Nutrition Data for a specific recipe ID
+  // Fetch nutrition data with caching
   static Future<Map<String, dynamic>> getNutritionData(int recipeId) async {
-    String apiEndpointUrl =
-        'https://api.spoonacular.com/recipes/$recipeId/nutritionWidget.json';
+    // Check if the nutrition data is already cached
+    if (_nutritionCache.containsKey(recipeId)) {
+      print('Returning cached nutrition data for recipe ID: $recipeId');
+      return _nutritionCache[recipeId]!;
+    }
 
-    // Send the GET request to the API
+    // If not cached, proceed with API call
+    String apiEndpointUrl =
+        'https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/$recipeId/nutritionWidget.json';
+
     final response = await http.get(
       Uri.parse(apiEndpointUrl),
       headers: {
@@ -98,23 +107,19 @@ class FoodService {
       },
     );
 
-    // Check if the request was successful
     if (response.statusCode == 200) {
-      // Log the response body for debugging
-      print('Response body: ${response.body}');
-
-      // Parse the response
       final data = jsonDecode(response.body);
 
-      // Return the full fetched nutritional data as is
-      print('Fetched nutrition data for recipe ID: $data');
+      // Cache the fetched nutrition data
+      _nutritionCache[recipeId] = data;
+
+      print('Fetched and cached nutrition data for recipe ID: $recipeId');
       return data;
     } else {
-      // Handle failure by logging the error and returning empty data
       print('Failed to fetch nutrition data for recipe ID: $recipeId');
       print('Error: ${response.statusCode} - ${response.reasonPhrase}');
 
-      // Return a map with 'N/A' values to indicate no data
+      // Return fallback data if the API call fails
       return {
         'calories': 'N/A',
         'carbs': 'N/A',
@@ -167,6 +172,49 @@ class FoodService {
         'instructions': 'N/A',
         'image': 'N/A',
       };
+    }
+  }
+
+  // Analyze nutrition using Edamam API
+  static Future<Map<String, dynamic>> analyzeNutrition(
+      List<String> ingredients) async {
+    // Edamam API credentials
+    const String edamamAppId = '863a0e0c';
+    const String edamamAppKey = '280150eed2fd1c42b096f2dc9aa8c703';
+    const String apiUrl =
+        'https://api.edamam.com/api/nutrition-details?app_id=$edamamAppId&app_key=$edamamAppKey&beta=true';
+
+    // Prepare the request body
+    Map<String, List<String>> payload = {"ingr": ingredients};
+
+    print(jsonEncode(payload));
+
+    try {
+      // Make the POST request to the Edamam API
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          'content-Type': 'application/json',
+          'accept': 'application/json',
+        },
+        body: jsonEncode(payload),
+      );
+
+      // If the request is successful, parse the data
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        print('Nutrition data fetched successfully: ${data['totalNutrients']}');
+        return data['totalNutrients'];
+      } else {
+        print('Failed to fetch nutrition data: ${response.statusCode}');
+        return {
+          'error':
+              'Failed to fetch nutrition data\nPlease Correct the Ingredients and try again'
+        };
+      }
+    } catch (e) {
+      print('Error occurred while fetching nutrition data: $e');
+      return {'error': 'Error occurred while fetching nutrition data'};
     }
   }
 }

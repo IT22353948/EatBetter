@@ -32,7 +32,7 @@ class _SavedRecipesState extends State<SavedRecipes> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: const <Widget>[
               Text(
-                'Saved Recipes',
+                'Available in the next update!',
                 style: TextStyle(fontSize: 24),
               ),
             ],

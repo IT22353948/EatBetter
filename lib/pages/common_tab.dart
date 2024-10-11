@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:eat_better/services/food_api_service.dart';
 import 'package:eat_better/pages/nutri_details.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class CommonTab extends StatelessWidget {
   const CommonTab({super.key});
@@ -42,7 +43,7 @@ class CommonTab extends StatelessWidget {
             height: h * .3,
             child: const TabBarView(
               children: [
-                HomeTabBarView(recipe: 'rice'),
+                HomeTabBarView(recipe: 'fried rice'),
                 HomeTabBarView(recipe: 'pasta'),
                 HomeTabBarView(recipe: 'bread'),
                 HomeTabBarView(recipe: 'cereal'),
@@ -94,7 +95,10 @@ class HomeTabBarView extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-              child: CircularProgressIndicator(),
+              child: SpinKitFadingCircle(
+                color: Color.fromARGB(192, 187, 5, 5),
+                size: 50.0,
+              ),
             );
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(
@@ -117,6 +121,7 @@ class HomeTabBarView extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => NutriDetails(
+                        name: title,
                         id: id,
                         imageUrl: imageUrl, // Pass the imageUrl here
                       ),

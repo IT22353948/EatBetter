@@ -5,7 +5,7 @@ import 'dart:convert';
 class FoodService {
   // API key for Spoonacular API, rapid api. for limit the calls i have add an extra number to the end of the key
   //to get this fetch function to work. remove the last integer from the api key
-  static String apiKey = '26e308d91dmsh73617d5e1036f24p15c7c4jsne600d99e4859';
+  static String apiKey = 'f55df82316msh842c240084ca715p1a5eb7jsn59a5586ea982';
 
   // Cache to store fetched recipes by name
   static Map<String, List<Map<String, dynamic>>> _cache = {};
@@ -49,7 +49,7 @@ class FoodService {
 
     // If data is not cached, proceed with the API call.
     String apiEndpointUrl =
-        'https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/complexSearch?query=$name&number=5';
+        'https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/complexSearch?query=$name&number=1';
     List<Map<String, dynamic>> recipes = [];
 
     // Make the API request.

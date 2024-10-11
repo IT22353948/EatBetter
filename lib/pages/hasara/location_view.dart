@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as location_package;
 import 'package:geocoding/geocoding.dart'; 
-import 'package:http/http.dart' as http; // Import for making API requests
+import 'package:http/http.dart' as http; 
 import 'package:custom_rating_bar/custom_rating_bar.dart';  //ratings
 import 'package:geolocator/geolocator.dart';
 import 'DirectionView.dart';

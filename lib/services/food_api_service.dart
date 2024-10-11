@@ -46,7 +46,7 @@ class FoodService {
 
     // If data is not cached, proceed with the API call.
     String apiEndpointUrl =
-        'https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/complexSearch?query=$name&number=1';
+        'https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/complexSearch?query=$name&number=5';
     List<Map<String, dynamic>> recipes = [];
 
     // Make the API request.
@@ -93,7 +93,8 @@ class FoodService {
       Uri.parse(apiEndpointUrl),
       headers: {
         'x-rapidapi-key': apiKey,
-        'x-rapidapi-host': 'spoonacular-recipe-food-nutrition-v1.p.rapidapi.com',
+        'x-rapidapi-host':
+            'spoonacular-recipe-food-nutrition-v1.p.rapidapi.com',
       },
     );
 
@@ -120,6 +121,51 @@ class FoodService {
         'fat': 'N/A',
         'protein': 'N/A',
         'bad': [], // Include 'bad' key as well
+      };
+    }
+  }
+
+  // Fetch Ingredient Data for a specific recipe ID
+  // Fetch recipe information details with caching
+  static Future<Map<String, dynamic>> getRecipeDetails(int recipeId) async {
+    Map<int, Map<String, dynamic>> _recipeDetailsCache = {};
+    // Check if the recipe details are already cached
+    if (_recipeDetailsCache.containsKey(recipeId)) {
+      print('Returning cached recipe details for recipe ID: $recipeId');
+      return _recipeDetailsCache[recipeId]!;
+    }
+
+    // If not cached, proceed with API call
+    String apiEndpointUrl =
+        'https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/$recipeId/information';
+
+    final response = await http.get(
+      Uri.parse(apiEndpointUrl),
+      headers: {
+        'x-rapidapi-key': apiKey,
+        'x-rapidapi-host':
+            'spoonacular-recipe-food-nutrition-v1.p.rapidapi.com',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+
+      // Cache the fetched recipe details
+      _recipeDetailsCache[recipeId] = data;
+
+      print('Fetched and cached recipe details for recipe ID: $recipeId');
+      return data;
+    } else {
+      print('Failed to fetch recipe details for recipe ID: $recipeId');
+      print('Error: ${response.statusCode} - ${response.reasonPhrase}');
+
+      // Return fallback data if the API call fails
+      return {
+        'title': 'N/A',
+        'summary': 'N/A',
+        'instructions': 'N/A',
+        'image': 'N/A',
       };
     }
   }

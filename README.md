@@ -66,7 +66,7 @@ files to be reamoved or replaced
 
 ## Contributors
 
-- [Gayashaan Krishnamoorthy](https://github.com/Gayashaan)
-- [Dinuvi Asithma](https://github.com/Dinuvi-Asithma)
+- [Gayashaan Krishnamoorthy](https://github.com/IT22353948)
+- [Dinuvi Asithma](https://github.com/IT22356086)
 - [Prabashwara](https://github.com/prabashwara65)
 - [Hasara](https://github.com/HasaraHS)

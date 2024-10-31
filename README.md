@@ -1,7 +1,31 @@
 # EatBetter
 
-EatBetter Flutter Mobile Apllication
+EatBetter is a Flutter-based mobile application designed to help users make healthier food choices through advanced nutritional analysis, food recognition, personalized dining suggestions, and nearby restaurant discovery.
 
+# About EatBetter
+EatBetter is designed with a suite of features aimed at making healthy eating easy and accessible. It provides powerful insights and recommendations to support various dietary goals.
+
+_Key Features_
+
+**Diet Optimizer:**
+
+Enter food items or recipes to receive calorie and nutrition analysis.
+
+**Food Recognition & Recipes:**
+
+Search for food, view related recipes, and find YouTube tutorials.
+
+**Menu Text Recognition:**
+
+Upload or take a photo of a menu to get dish recommendations tailored to user preferences.
+Balanced meal suggestions and an option to regenerate choices.
+
+**Restaurant Finder:**
+
+Discover nearby restaurants with ratings, distance, and navigation details.
+Quick access to high-rated restaurants within a set radius.
+
+# How to Start
 1. Clone the application (https://github.com/IT22353948/EatBetter.git)
 2. Open folder code in vscode
 3. by pressing ctrl and ` open the terminal
